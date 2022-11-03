@@ -61,7 +61,7 @@
                 img: "./images/unitn.png",
                 title: "Attending Master's in Data Science",
                 subtitles: [
-                    { flag: "It", name: "UniTn", text: ", Trento, Italy | September 2021 - September 2023", url: "https://www.unitn.it/" },
+                    { flag: "It", name: "University of Trento", text: ", Trento, Italy | September 2021 - current", url: "https://www.unitn.it/" },
                 ],
                 description: "\
                 I am currently attending a multidisciplinar Master degree in Trento in Data Science, with a minor in Sociology.\
@@ -98,7 +98,7 @@
                     { flag: 'It', name: "University of Trento", text: ", Trento, Italy | September 2018 - July 2022", url: "https://www.unitn.it/" }
                 ],
                 description: "\
-                I have taken courses in Software Engineering, Data Structures, Algorithms, and Programming and Mathematics.\
+                I have taken courses in Software Engineering, Data Structures, Algorithms, Programming and Mathematics.\
                 I graduated in July 2022",
                 showMore: false,
                 more: "The complete list of courses I have taken:\
@@ -135,7 +135,7 @@
                 subtitles: [
                     { flag: 'Es', name: "Eurecat", text: ", Barcelona, Spain | January - June 2021", url: "https://www.eurecat.org/" }
                 ],
-                description: "Analyzingc Reverts and edit wars on wikipedia ."
+                description: "Analyzing Reverts and edit wars on wikipedia ."
             },
             {
                 flipped: true,
@@ -144,7 +144,7 @@
                 subtitles: [
                     { flag: 'It', name: "UniTn", text: ", Trento, Italy | July 2020 - july 2021" }
                 ],
-                description: "my role was to help teachers to handle online degrees on zoom"
+                description: "Help teachers to handle online degrees on zoom"
             },
             {
                 flipped: true,
