@@ -1,7 +1,7 @@
 <div class="header">
   <div class="title">
     <p class="welcome">{ welcome }</p>
-    <h1>I'm Nicola Toscan</h1>
+    <h1>I'm Alessio Gandelli</h1>
     <p>Developer &amp; MSc Data Science Student</p>
   </div>
 </div>

@@ -15,7 +15,7 @@
     { /each }
 </div>
 <div class="more-github">
-    <a href="https://github.com/nicolatoscan" target="_blank">
+    <a href="https://github.com/alessiogandelli" target="_blank">
         <p>And many more on my Github</p><Github size='32' />
     </a>
 </div>
@@ -26,36 +26,26 @@
 
     type Project = { name: string, description: string, link: string }
     const projects: { name: string, projects: Project[] }[] = [
-        { name: "Web", projects: [
-            { name: "CV",               link: "https://github.com/nicolatoscan/cv",                     description: "This website" },
-            { name: "Rememo",           link: "https://github.com/nicolatoscan/rememo-webapp",          description: "WebApp with flashcards to learn languages" },
-            { name: "Monopoly Bank",    link: "https://github.com/nicolatoscan/monopoly-bank",          description: "Manage a \"Credit card Monopoly\" game when the card reader breaks" },
-            { name: "Concorso Presepi", link: "https://github.com/nicolatoscan/concorso-presepi-2020",  description: "Vote for the best nativity scene in my Village" },
-            { name: "Copy Lorem Ipsum", link: "https://github.com/nicolatoscan/copy-lorem-ipsum",       description: "By opening this site Lorem Ipsum will be copied in your clipboard" },
+       { name: "Data Science", projects: [
+            { name: "Covid dashboard", link: "https://github.com/alessiogandelli/covid-dashboard-unitn", description: "University project of big data technologies, implemented using Kafka, Postgres, Kafka and mongodb" },
+            { name: "Computer Vision: image retriaval",         link: "https://github.com/alessiogandelli/machine-learning-unitn",    description: "I implemented a siamese network to find the most similar image from a gallery" },
+            { name: "Spotify network analysis",    link: "https://github.com/alessiogandelli/feat-network",           description: "Network analysis of spotify singers (in progress)" },
+            { name: "Wikipedia Revert analysis",    link: "https://github.com/WikiCommunityHealth/wikimedia-revert", description: "Analysis of wikipedia revert" },
+            { name: "Geospatial ",                 link: "",        description: "in progress" },
+            { name: "Attention analysis",          link: "",        description: "University project: Analyse phone sensors data to study the attetion that students give to their phone (in progress)" },
+            { name: "Twitter analysis",          link: "",        description: "University project: Analyse twitte data (in progress)" },
+
         ] },
-        { name: "Telegram & Discord Bots", projects: [
-            { name: "Twitch to MP3",                link: "https://github.com/nicolatoscan/twitch-to-mp3-telegram-bot",                 description: "Get a twitch live as a mp3 podcast on Telegram" },
-            { name: "Laundry",                      link: "https://github.com/nicolatoscan/laundry-bot",                                description: "Check availability and book laundry in a student accomodation" },
-            { name: "Aurora",                       link: "https://github.com/nicolatoscan/aurora-bot",                                 description: "Allerts you when the northen lights may be visible" },
-            { name: "P&S Grades",                   link: "https://github.com/nicolatoscan/probabilita-statistica-unitn-telegram-bot",  description: "Get the latest daily grade of a course at the University of Trento" },
-            { name: "Discord cinema",               link: "https://github.com/nicolatoscan/cinebiscotto-discord-bot",                   description: "Create a channel on Discord and launch a countdown to watch a movie together" },
-            { name: "Auto Suscriber Exam",          link: "https://github.com/nicolatoscan/automatic-suscribe-exam",                    description: "Automatically suscribes you to the exam you want when a new place is available" },
-            { name: "Telegram shell controller",    link: "https://github.com/nicolatoscan/telegram-shell-controller",                  description: "Control your shell from your phone" },
-            { name: "Files bot",                    link: "https://github.com/nicolatoscan/file-bot",                                   description: "Remotely download a file and upload it to Telegram" },
+        { name: "Telegram Bots", projects: [
+            { name: "Chess, pgn to url",                link: "https://github.com/alessiogandelli/import-chess-game-bot",                 description: "A telegram bot that given a game in pgn format returns a url where you can visualise the game " },
+            { name: "Bottana translator",                      link: "https://github.com/alessiogandelli/bottana",                                description: "A telegram bot that uses Deepl api to translate messages in a group chat or sent directly to the bot " },
         ] },
-        { name: "Android", projects: [
-            { name: "Rememo",       link: "https://github.com/nicolatoscan/rememo-android-app", description: "Android App with flashcards to learn languages" },
-            { name: "Frier Timer",  link: "https://github.com/nicolatoscan/FrierTimer",         description: "Android app to check fring time in two basket friers" },
+        { name: "node module", projects: [
+            { name: "create-xml",       link: "https://github.com/alessiogandelli/create-xml-module", description: "node module that collect data from ninox and generate a xml according to the format provided by the Italian financial ministry" },
+            ,
         ] },
-        { name: "Arduino", projects: [
-            { name: "Smart lights", link: "https://github.com/nicolatoscan/smart-hub-console-controller",   description: "Controll the lights of my house with Arduino" },
-        ] },
-        { name: "Data Science & Algorithms", projects: [
-            { name: "Wikipedia communities", link: "https://github.com/nicolatoscan/wikipedia-communities", description: "Detect wikipedia communities from the interaction graph" },
-            { name: "Galaxies",              link: "https://github.com/nicolatoscan/ml-galaxies",           description: "Classify galaxies from their images" },
-            { name: "Wikipedia emotions",    link: "https://github.com/nicolatoscan/wiki-emo-dp",           description: "Analysis of wikipedia emotions" },
-            { name: "Masyu",                 link: "https://github.com/nicolatoscan/SWRace-JeffWho",        description: "Our proposal to solve the Masyu puzzle, a NP problem" },
-        ] },
+        
+        
     ] 
 
 </script>

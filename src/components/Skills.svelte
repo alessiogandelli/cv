@@ -2,31 +2,23 @@
 <div class="skills">
     
     <h3 class="spacer">SOFT SKILLS:</h3>
-    <p class="spacer"> Flexibility, Team work, Work under pressure </p>
+    <p class="spacer"> Critical thinking, Problem solving, Team work, Adaptability </p>
 
     <h3>PROGRAMMING LANGUAGES:</h3>
-    <p> Typescript, Javascript, Python, C#, C++, Java </p>
+    <p> Python, R,  Typescript, Javascript, </p>
 
     <h3>DATA SCIENCE:</h3>
-    <p> Machine Learning, NN, Transformers, Data Mining </p>
-
-    <h3>JS FRAMEWORKS:</h3>
-    <p> Vue, React, Angular, Express.js </p>
-
-    <h3>DESKTOP & MOBILE:</h3>
-    <p> .NET, Android Studio </p>
+    <p> Pandas, Spark, Kafka, Geopandas, matplotlib  </p>
 
     <h3>DATABASES:</h3>
-    <p> Postgtres, MongoDB </p>
+    <p> Postgtres, MongoDB, Sqlite </p>
 
     <h3>IT SOFTWARES:</h3>
     <p> Linux, Git, Docker </p>
 
     <h3>CLOUD INFRASTRUCTURE:</h3>
-    <p> Google Cloud, Azure, Aws, Heroku </p>
+    <p> Google Cloud </p>
 
-    <h3>OTHER SOFTWARES:</h3>
-    <p> Office suite, Photoshop, Premiere Pro </p>
 
 </div>
 

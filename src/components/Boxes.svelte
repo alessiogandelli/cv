@@ -58,47 +58,48 @@
     const infos: { [id: string]: Box[] } = {
         Education: [
             {
-                img: "./images/kthtub.webp",
+                img: "./images/unitn.png",
                 title: "Attending Master's in Data Science",
                 subtitles: [
-                    { flag: "Se", name: "KTH", text: ", Stockholm, Sweden | August 2021 - June 2022", url: "https://www.kth.se/" },
-                    { flag: "De", name: "TU Berlin", text: ", Berlin, Germany | October 2022 - Current", url: "https://www.tu.berlin/" },
+                    { flag: "It", name: "UniTn", text: ", Trento, Italy | September 2021 - September 2023", url: "https://www.unitn.it/" },
                 ],
                 description: "\
-                I am currently attending a joint Master degree in Stockholm and Berlin in Data Science, with a minor in Entrepreneur & Innovation.\
-                I spent the first year in Stockholm and I will spend the second year in Berlin.",
+                I am currently attending a multidisciplinar Master degree in Trento in Data Science, with a minor in Sociology.\
+                 ",
                 showMore: false,
                 more: "The complete list of courses I have taken:\
                 <ul>\
-                <li>Machine Learning</li>\
-                <li>Scalable Machine Learning and Deep Learning</li>\
-                <li>Programming for Data Science</li>\
-                <li>Data Mining, Basic Course</li>\
-                <li>Research Methodology and Scientific Writing</li>\
-                <li>Entrepreneurship for Engineers</li>\
-                <li>Business Development Lab of Entrepreneurship Engineers</li>\
-                <li>e-Business Strategies</li>\
+                <li>Big Data Technologies</li>\
+                <li>Data Mining</li>\
+                <li>Data visualization</li>\
+                <li>Foundations of Social and Psychological Science</li>\
+                <li>Information, Knowledge and Service Management</li>\
+                <li>introduction to Machine Learning</li>\
+                <li>Law and Data</li>\
+                <li>Professional English for Data Science</li>\
+                <li>Statistical Learning</li>\
+                <li>Statistical Methods</li>\
                 </ul>\
                 <br />\
                 Courses I am currently attending:\
                 <ul>\
-                <li>Database Technology</li>\
-                <li>Big Data Systems Project</li>\
-                <li>Management of Data Streams</li>\
-                <li>Machine Learning for Remote Sensing Data Analysis</li>\
-                <li>Innovation Management and Entrepreneurship Study</li>\
+                <li>Advanced social network analysisy</li>\
+                <li>Digital social data</li>\
+                <li>Geospatial analysis and representation for data science</li>\
+                <li>Innovation and Entrepreneurship Basic</li>\
+                <li>Social Dynamics Lab</li>\
                 </ul>\
                 "
             },
             {
-                img: "./images/trento.webp",
+                img: "./images/unitn.png",
                 title: "Bachelor's in Computer Science",
                 subtitles: [
                     { flag: 'It', name: "University of Trento", text: ", Trento, Italy | September 2018 - July 2022", url: "https://www.unitn.it/" }
                 ],
                 description: "\
                 I have taken courses in Software Engineering, Data Structures, Algorithms, and Programming and Mathematics.\
-                I graduated with the highest grade of 110 cum laude in July 2022",
+                I graduated in July 2022",
                 showMore: false,
                 more: "The complete list of courses I have taken:\
                 <ul>\
@@ -120,7 +121,7 @@
                 <li>Human-Computer Interaction</li>\
                 <li>Introduction to Computer and Network Security</li>\
                 <li>Introduction to Web Programming</li>\
-                <li>Introduction to Mobile Development</li>\
+                <li>Social psychology</li>\
                 <li>Introduction to Machine Learning</li>\
                 </ul>\
                 "
@@ -134,46 +135,36 @@
                 subtitles: [
                     { flag: 'Es', name: "Eurecat", text: ", Barcelona, Spain | January - June 2021", url: "https://www.eurecat.org/" }
                 ],
-                description: "Analyzing emotions in messages written and received by a user in Wikipedia talk pages over time using Python."
+                description: "Analyzingc Reverts and edit wars on wikipedia ."
             },
             {
                 flipped: true,
-                img: "./images/aqrate.webp",
-                title: "Web Developer Internship",
+                img: "./images/unitn.png",
+                title: "Linguistic Center Division Test Center and Online Teaching",
                 subtitles: [
-                    { flag: 'It', name: "Aqrate", text: ", Montebelluna, Italy | Summers of 2016 and 2017" }
+                    { flag: 'It', name: "UniTn", text: ", Trento, Italy | July 2020 - july 2021" }
                 ],
-                description: "Continuous development of multiple restful web apps and APIs used by the company itself or their clients. Developed with Angular, .NET Framework, ASP-NET MVC and Azure authentication services with TypeScript, JavaScript and C#."
+                description: "my role was to help teachers to handle online degrees on zoom"
+            },
+            {
+                flipped: true,
+                img: "./images/saf.jpg",
+                title: "Computer assistant",
+                subtitles: [
+                    { flag: 'It', name: "SAF-GEST srl", text: ", Rodengo Saiano, Italy | June 2020 - current" }
+                ],
+                description: "I give general help regarding all the computer activities of the company but I spend most of the time developing a system that allows companies to automatically generate electronic invoices for the revenue agency (agenzia delle entrate). This is not a full time job."
             },
         ],
         Projects: [
             {
-                img: "./images/rennes.webp",
-                title: "Summer School - Solutions for Healthier Digital Cities",
+                img: "./images/soi.jpg",
+                title: "School of Innovation",
                 subtitles: [
-                    { flag: 'Fr', name: "Université de Rennes 1", text: ", Rennes, France | July 2022", url: "https://www.univ-rennes1.fr/" }
+                    { flag: 'It', name: "SOI", text: ", Trento, Italy | July 2022", url: "https://www.soi.unitn.it" }
                 ],
-                description: "Two week summer school in Rennes on the topic of digital solutions for healthier cities organazied by EiT.\
-                Work in teams on challenging cases, with the end goal of creating a start-up solving the problem.\
-                We took courses on Entrepreneurship and Business analysis."
-            },
-            {
-                img: "./images/eagle.webp",
-                title: "Eletric Racing Car Telemetry",
-                subtitles: [
-                    { flag: 'It', name: "Eagle TRT", text: ", Trento, Italy | Semptember 2020 - June 2021", url: "https://www.eagletrt.it/" }
-                ],
-                description: "Developing a telemetry software using C for an electric formula SAE car, designed and build by the Eagle Trento racing team since September 2020."
-            },
-            {
-                img: "./images/webapp.webp",
-                title: "Web Apps as management software",
-                description: "Developed the following two management software applications as web apps using Vue, Node.js, MongoDB and SQL databases:<br />\
-                <ul>\
-                <li>Management software for the accomodation offered by the University of Trento through Opera.</li>\
-                <li>Management software to catalogued books of the libraries of Bolzano through librilib(e)ri.</li>\
-                </ui>"
-            },
+                description: "Extracurricolar program at Università di Trento focused on innovation and entrepreneurship, I'm following the courses: Empathy and innovation, From Idea to business idea. I also attend a challenge called \"design your future \" in collaboration with Muse a Museum in Trento where the goal is design a game to let children engage with syntehtic biology."
+            }
             // {
             //     // img: "./images/fal.webp",
             //     title: "Company websites",

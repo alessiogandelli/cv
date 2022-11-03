@@ -14,10 +14,9 @@
   <div id="other-experiences" class="section"> <Boxes type='Projects' /> </div>
   <div id="projects" class="section"> <Projects /> </div>
   <div id="else" class="section"> <Else /> </div>
-  <div id="certifications" class="section"> <Certificates /> </div>
+  
 
   <footer>
-    <p>Made with Svelte by Me</p>
     <p>Last updated October 2022</p>
   </footer>
 </div>
@@ -55,11 +54,11 @@
     --black: #222;
   }
   .dark {
-    --theme: #FFAD6B;
+    --theme: #22BFAC;
     --theme-select: #C04000;
     --theme-background: #A0522D;
     --color: #FFFDFA;
-    --color-bg: #222;
+    --color-bg: #2A206C;
   }
 
   :global(.themed-icon path) {

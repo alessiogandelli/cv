@@ -1,25 +1,25 @@
 <h2>ABOUT ME</h2>
 <div class="my-info">
-    <p><span class="info-name">Name:</span>Nicola Toscan</p>
+    <p><span class="info-name">Name:</span>Alessio Gandelli</p>
     <p><span class="info-name">From:</span>Italy</p>
     <p><span class="info-name">Age:</span>{ age }</p>
-    <p><span class="info-name">Now in:</span>Berlin</p>
+    <p><span class="info-name">Now in:</span>Trento (it) </p>
 </div>
 <div class="about">
     <div class="picture"></div>
     <p>
-        I'm a { age } years old Italian student, currently attending a Masters Degree in Data Science at KTH Royal Institute of Technology and TU Berlin.<br />
-        I'm passionate about data science and web development.
+        I'm a { age } years old Italian student, currently attending a Masters Degree in Data Science at UniTn.<br />
+        I'm passionate about data science, human behaviour and innovation.
     </p>
 </div>
 <div class="urls">
-    <a href="https://www.github.com/nicolatoscan/"      aria-label="GitHub"   class="themed-icon" target="_blank"><Github   size='48' /> </a>
-    <a href="https://www.linkedin.com/in/nicolatoscan/" aria-label="LinkedIn" class="themed-icon" target="_blank"><Linkedin size='48' /> </a>
-    <a href="mailto:me@toscan.dev"                      aria-label="Email"    class="themed-icon" target="_blank"><Email    size='48' /> </a>
-    <a href="https://www.t.me/nicolatoscan/"            aria-label="Telegram" class="themed-icon" target="_blank"><Telegram size='48' /> </a>
+    <a href="https://www.github.com/alessiogandelli/"      aria-label="GitHub"   class="themed-icon" target="_blank"><Github   size='48' /> </a>
+    <a href="https://www.linkedin.com/in/alessio-gandelli-36289a181/" aria-label="LinkedIn" class="themed-icon" target="_blank"><Linkedin size='48' /> </a>
+    <a href="mailto:alessiogandelli99@gmail.com"                      aria-label="Email"    class="themed-icon" target="_blank"><Email    size='48' /> </a>
+    <a href="https://www.t.me/d8eea/"            aria-label="Telegram" class="themed-icon" target="_blank"><Telegram size='48' /> </a>
 </div>
 <div class="download-as-pdf">
-    <a href="./files/NicolaToscan_CV.pdf" target="_blank">
+    <a href="./files/curriculum2022.pdf" target="_blank">
         <p>Download resume as PDF</p><PdfBox size='32' />
     </a>
 </div>
@@ -61,7 +61,7 @@
         .picture {
             width: 120px;
             height: 120px;
-            background-image: url(../images/pro.webp);
+            background-image: url(../images/alessio-gandelli.jpeg);
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
