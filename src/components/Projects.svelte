@@ -13,7 +13,7 @@
         </div>
     </div>
     { /each }
-</div>
+</div>  
 <div class="more-github">
     <a href="https://github.com/alessiogandelli" target="_blank">
         <p>And many more on my Github</p><Github size='32' />
