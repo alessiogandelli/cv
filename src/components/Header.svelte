@@ -7,7 +7,7 @@
 </div>
 
 <script lang="ts">
-  const welcomes = [ "Welcome!", "Benvenuto!", "Willkommen!", "Välkommen!", "Bienvenue!", "¡Bienvenidas!" ]
+  const welcomes = [ "Welcome!", "Benvenuto!", "Willkommen!", "Bienvenue!", "¡Bienvenidas!" ]
   let wIndex = 0;
   let welcome = welcomes[wIndex];
 
@@ -43,7 +43,7 @@
     left: 0;
     width: 100%;
     height: 30vh;
-    background: linear-gradient( rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9) ), url('../images/cover.webp');
+    background: linear-gradient( rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9));
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
