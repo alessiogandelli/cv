@@ -61,7 +61,7 @@
         .picture {
             width: 120px;
             height: 120px;
-            background-image: url(../images/alessio-gandelli.jpeg);
+            background-image: url(../images/propic.jpeg);
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
