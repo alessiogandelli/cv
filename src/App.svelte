@@ -44,7 +44,7 @@
 <style>
 
   :root {
-    --theme: #C04000;
+    --theme: #2A206C;
     --theme-select: #FFAD6B;
     --theme-background: #FFDEAD;
     --color: #222;

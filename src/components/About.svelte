@@ -15,7 +15,7 @@
 <div class="urls">
     <a href="https://www.github.com/alessiogandelli/"      aria-label="GitHub"   class="themed-icon" target="_blank"><Github   size='48' /> </a>
     <a href="https://www.linkedin.com/in/alessio-gandelli-36289a181/" aria-label="LinkedIn" class="themed-icon" target="_blank"><Linkedin size='48' /> </a>
-    <a href="mailto:alessiogandelli99@gmail.com"                      aria-label="Email"    class="themed-icon" target="_blank"><Email    size='48' /> </a>
+    <a href="mailto:me@gandelli.dev"             aria-label="Email"    class="themed-icon" target="_blank"><Email    size='48' /> </a>
     <a href="https://www.t.me/d8eea/"            aria-label="Telegram" class="themed-icon" target="_blank"><Telegram size='48' /> </a>
 </div>
 <div class="download-as-pdf">
