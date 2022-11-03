@@ -44,11 +44,11 @@
 <style>
 
   :root {
-    --theme: #2A206C;
+    --theme: #5e4cd5;
     --theme-select: #FFAD6B;
     --theme-background: #FFDEAD;
     --color: #222;
-    --color-bg: #FFFDFA;
+    --color-bg: #e2e2e2;
 
     --white: #FFFDFA;
     --black: #222;
