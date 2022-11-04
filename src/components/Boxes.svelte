@@ -163,7 +163,7 @@
                 subtitles: [
                     { flag: 'It', name: "SOI", text: ", Trento, Italy | July 2022", url: "https://www.soi.unitn.it" }
                 ],
-                description: "Extracurricolar program at Università di Trento focused on innovation and entrepreneurship, I'm following the courses: Empathy and innovation, From Idea to business idea. I also attend a challenge called \"design your future \" in collaboration with Muse a Museum in Trento where the goal is design a game to let children engage with syntehtic biology."
+                description: "Extracurricular program at Università di Trento focused on innovation and entrepreneurship, I'm following the courses: Empathy and innovation, From Idea to business idea. I also attend a challenge called \"design your future \" in collaboration with Muse a Museum in Trento where the goal is design a game to let children engage with Synthetic biology."
             }
             // {
             //     // img: "./images/fal.webp",

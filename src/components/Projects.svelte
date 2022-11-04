@@ -28,11 +28,11 @@
     const projects: { name: string, projects: Project[] }[] = [
        { name: "Data Science", projects: [
             { name: "Covid dashboard", link: "https://github.com/alessiogandelli/covid-dashboard-unitn", description: "University project of big data technologies, implemented using Kafka, Postgres, Kafka and mongodb" },
-            { name: "Computer Vision: image retriaval",         link: "https://github.com/alessiogandelli/machine-learning-unitn",    description: "I implemented a siamese network to find the most similar image from a gallery" },
+            { name: "Computer Vision: image retrieval",         link: "https://github.com/alessiogandelli/machine-learning-unitn",    description: "I implemented a siamese network to find the most similar image from a gallery" },
             { name: "Spotify network analysis",    link: "https://github.com/alessiogandelli/feat-network",           description: "Network analysis of spotify singers (in progress)" },
             { name: "Wikipedia Revert analysis",    link: "https://github.com/WikiCommunityHealth/wikimedia-revert", description: "Analysis of wikipedia revert" },
             { name: "Geospatial ",                 link: "",        description: "in progress" },
-            { name: "Attention analysis",          link: "",        description: "University project: Analyse phone sensors data to study the attetion that students give to their phone (in progress)" },
+            { name: "Attention analysis",          link: "",        description: "University project: se phone sensors data to study the attetion that students give to their phone (in progress)" },
             { name: "Twitter analysis",          link: "",        description: "University project: Analyse twitte data (in progress)" },
 
         ] },
