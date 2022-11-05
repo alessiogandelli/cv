@@ -33,7 +33,7 @@
             { name: "Wikipedia Revert analysis",    link: "https://github.com/WikiCommunityHealth/wikimedia-revert", description: "Analysis of wikipedia revert" },
             { name: "Geospatial ",                 link: "",        description: "in progress" },
             { name: "Attention analysis",          link: "",        description: "University project: se phone sensors data to study the attetion that students give to their phone (in progress)" },
-            { name: "Twitter analysis",          link: "",        description: "University project: Analyse twitte data (in progress)" },
+            { name: "Twitter analysis",          link: "",        description: "University project: Analyse twitter data (in progress)" },
 
         ] },
         { name: "Telegram Bots", projects: [

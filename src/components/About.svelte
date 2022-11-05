@@ -9,7 +9,7 @@
     <div class="picture"></div>
     <p>
         I'm a { age } years old Italian student, currently attending a Masters Degree in Data Science at UniTn.<br />
-        I'm passionate about data science, human behaviour and innovation.
+        I'm passionate about data science, human behaviour and innovation. I'm eager to learn anything .
     </p>
 </div>
 <div class="urls">
@@ -19,7 +19,7 @@
     <a href="https://www.t.me/d8eea/"            aria-label="Telegram" class="themed-icon" target="_blank"><Telegram size='48' /> </a>
 </div>
 <div class="download-as-pdf">
-    <a href="./files/curriculum2022.pdf" target="_blank">
+    <a href="./files/alessiogandelli_cv.pdf" target="_blank">
         <p>Download resume as PDF</p><PdfBox size='32' />
     </a>
 </div>

@@ -17,7 +17,7 @@
   
 
   <footer>
-    <p>Last updated October 2022</p>
+    <p>Last updated November 2022</p>
   </footer>
 </div>
 
