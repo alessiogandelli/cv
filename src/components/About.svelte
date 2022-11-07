@@ -32,7 +32,7 @@
     import Telegram from "svelte-material-icons/Telegram.svelte";
     import PdfBox from "svelte-material-icons/PdfBox.svelte";
 
-    const age = Math.floor( (new Date().getTime() - new Date(1999, 0, 31).getTime()) / 3.15576e+10 );
+    const age = Math.floor( (new Date().getTime() - new Date(1999, 9, 13).getTime()) / 3.15576e+10 );
 </script>
 
 

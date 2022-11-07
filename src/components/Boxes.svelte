@@ -64,7 +64,7 @@
                     { flag: "It", name: "University of Trento", text: ", Trento, Italy | September 2021 - current", url: "https://www.unitn.it/" },
                 ],
                 description: "\
-                I am currently attending a multidisciplinar Master degree in Trento in Data Science, with a minor in Sociology.\
+                I am currently attending a multidisciplinar Master's degree in Trento in Data Science, with a minor in Sociology.\
                  ",
                 showMore: false,
                 more: "The complete list of courses I have taken:\
@@ -99,7 +99,7 @@
                 ],
                 description: "\
                 I have taken courses in Software Engineering, Data Structures, Algorithms, Programming and Mathematics.\
-                I graduated in July 2022",
+                I graduated in July 2022.",
                 showMore: false,
                 more: "The complete list of courses I have taken:\
                 <ul>\
@@ -135,7 +135,7 @@
                 subtitles: [
                     { flag: 'Es', name: "Eurecat", text: ", Barcelona, Spain | January - June 2021", url: "https://www.eurecat.org/" }
                 ],
-                description: "Analyzing Reverts and edit wars on wikipedia ."
+                description: "Analysis of Reverts and edit wars on wikipedia."
             },
             {
                 flipped: true,
@@ -144,7 +144,7 @@
                 subtitles: [
                     { flag: 'It', name: "UniTn", text: ", Trento, Italy | July 2020 - july 2021" }
                 ],
-                description: "Help teachers to handle online degrees on zoom"
+                description: "Helped professors to handle online degrees on Zoom."
             },
             {
                 flipped: true,
@@ -153,7 +153,7 @@
                 subtitles: [
                     { flag: 'It', name: "SAF-GEST srl", text: ", Rodengo Saiano, Italy | June 2020 - current" }
                 ],
-                description: "I give general help regarding all the computer activities of the company but I spend most of the time developing a system that allows companies to automatically generate electronic invoices for the revenue agency (agenzia delle entrate). This is not a full time job."
+                description: "I developed a system that allows companies to automatically generate electronic invoices for the revenue agency (Agenzia Delle Entrate). I also give general help regarding all computer activities of the company. Though, This is not a full time job."
             },
         ],
         Projects: [
