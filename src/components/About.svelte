@@ -8,8 +8,8 @@
 <div class="about">
     <div class="picture"></div>
     <p>
-        I'm a { age } years old Italian student, currently attending a Masters Degree in Data Science at UniTn.<br />
-        I'm passionate about data science, human behaviour and innovation. I'm eager to learn anything .
+        I'm a { age } years old Italian student, currently attending a Master's Degree in Data Science at UniTn.<br />
+        I'm passionate about data science, human behaviour and innovation.
     </p>
 </div>
 <div class="urls">
