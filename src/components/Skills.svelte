@@ -11,7 +11,7 @@
     <p> Pandas, Spark, Kafka, Geopandas, Matplotlib  </p>
 
     <h3>DATABASES:</h3>
-    <p> Postgtres, MongoDB, Sqlite </p>
+    <p> Postgtres, MongoDB, SQLite </p>
 
     <h3>IT SOFTWARES:</h3>
     <p> Linux, Git, Docker </p>

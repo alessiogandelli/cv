@@ -27,21 +27,21 @@
     type Project = { name: string, description: string, link: string }
     const projects: { name: string, projects: Project[] }[] = [
        { name: "Data Science", projects: [
-            { name: "Covid dashboard", link: "https://github.com/alessiogandelli/covid-dashboard-unitn", description: "University project of big data technologies, implemented using Kafka, Postgres, Kafka and mongodb" },
+            { name: "Covid dashboard", link: "https://github.com/alessiogandelli/covid-dashboard-unitn", description: "University project of big data technologies, implemented using Kafka, Postgres, Kafka and MongoDB" },
             { name: "Computer Vision: image retrieval",         link: "https://github.com/alessiogandelli/machine-learning-unitn",    description: "I implemented a siamese network to find the most similar image from a gallery" },
             { name: "Spotify network analysis",    link: "https://github.com/alessiogandelli/feat-network",           description: "Network analysis of spotify singers (in progress)" },
             { name: "Wikipedia Revert analysis",    link: "https://github.com/WikiCommunityHealth/wikimedia-revert", description: "Analysis of wikipedia revert" },
-            { name: "Geospatial ",                 link: "",        description: "in progress" },
+            { name: "Geospatial ",                 link: "",        description: "In progress" },
             { name: "Attention analysis",          link: "",        description: "University project: se phone sensors data to study the attetion that students give to their phone (in progress)" },
             { name: "Twitter analysis",          link: "",        description: "University project: Analyse twitter data (in progress)" },
 
         ] },
         { name: "Telegram Bots", projects: [
-            { name: "Chess, pgn to url",                link: "https://github.com/alessiogandelli/import-chess-game-bot",                 description: "A telegram bot that given a game in pgn format returns a url where you can visualise the game " },
-            { name: "Bottana translator",                      link: "https://github.com/alessiogandelli/bottana",                                description: "A telegram bot that uses Deepl api to translate messages in a group chat or sent directly to the bot " },
+            { name: "Chess, pgn to url",                link: "https://github.com/alessiogandelli/import-chess-game-bot",                 description: "A Telegram bot that given a game in pgn format returns a url where you can visualise the game " },
+            { name: "Bottana translator",                      link: "https://github.com/alessiogandelli/bottana",                                description: "A Telegram bot that uses Deepl api to translate messages in a group chat or sent directly to the bot " },
         ] },
         { name: "node module", projects: [
-            { name: "create-xml",       link: "https://github.com/alessiogandelli/create-xml-module", description: "node module that collect data from ninox and generate a xml according to the format provided by the Italian financial ministry" },
+            { name: "create-xml",       link: "https://github.com/alessiogandelli/create-xml-module", description: "Node module that collect data from ninox and generate a xml according to the format provided by the Italian financial ministry" },
             ,
         ] },
         
