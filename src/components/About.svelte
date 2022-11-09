@@ -8,8 +8,9 @@
 <div class="about">
     <div class="picture"></div>
     <p>
-        I'm a { age } years old Italian student, currently attending a Master's Degree in Data Science at UniTn.<br />
-        I'm passionate about data science, human behaviour and innovation.
+        I'm a { age } years old Italian student, currently attending a multidisciplinary MSc in Data Science with domain expertise in Social Sciences and Human behavior. 
+I am a self-motivated, determined hard worker who learns quickly and thrives on taking on new challenges. 
+Continuous growth, both personally and professionally, is very important to me. I mostly learn with a project-oriented style but I also enjoy reading non-fictional books. (My favorite  authors right now are Y. N. Harari and J. Diamond.)
     </p>
 </div>
 <div class="urls">
