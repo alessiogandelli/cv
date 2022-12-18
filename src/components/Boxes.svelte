@@ -95,11 +95,11 @@
                 img: "./images/unitn.png",
                 title: "Bachelor's in Computer Science",
                 subtitles: [
-                    { flag: 'It', name: "University of Trento", text: ", Trento, Italy | September 2018 - July 2022", url: "https://www.unitn.it/" }
+                    { flag: 'It', name: "University of Trento", text: ", Trento, Italy | September 2018 - July 2021", url: "https://www.unitn.it/" }
                 ],
                 description: "\
                 I have taken courses in Software Engineering, Data Structures, Algorithms, Programming and Mathematics.\
-                I graduated in July 2022.",
+                I graduated in July 2021.",
                 showMore: false,
                 more: "The complete list of courses I have taken:\
                 <ul>\
