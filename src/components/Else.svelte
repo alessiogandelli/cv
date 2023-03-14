@@ -6,6 +6,9 @@
             <ul>                  
                 <li>“NOI Hackathon” in Bolzano (2019) - Alexa voice recognition skill - 1st position</li>
             </ul>
+            <ul>                  
+                <li>“NOI Hackathon” in Bolzano (2022) </li>
+            </ul>
         </div>
     </div>
 

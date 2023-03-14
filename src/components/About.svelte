@@ -3,13 +3,13 @@
     <p><span class="info-name">Name:</span>Alessio Gandelli</p>
     <p><span class="info-name">From:</span>Italy</p>
     <p><span class="info-name">Age:</span>{ age }</p>
-    <p><span class="info-name">Now in:</span>Trento (it) </p>
+    <p><span class="info-name">Now in:</span>Uppsala (se) </p>
 </div>
 <div class="about">
     <div class="picture"></div>
     <p>
         I'm a { age } years old Italian student, currently attending a multidisciplinary MSc in Data Science with domain expertise in Social Sciences and Human behavior. <br> <br>
-        I mostly learn with a project-oriented style but I also enjoy reading non-fictional books. (My favorite  authors right now are Y. N. Harari and J. Diamond.)
+        I'm also the co-founder of <a href="https://www.studybuddy.it" target="_blank">StudyBuddy</a>. <br> <br>
     </p>
 </div>
 <div class="urls">

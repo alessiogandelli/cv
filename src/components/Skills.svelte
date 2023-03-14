@@ -5,10 +5,10 @@
     <p class="spacer"> Critical thinking, Problem solving, Team work, Adaptability </p>
 
     <h3>PROGRAMMING LANGUAGES:</h3>
-    <p> Python, R, Typescript, Javascript, Bash </p>
+    <p> Python, Typescript, Javascript, R, Bash </p>
 
     <h3>DATA SCIENCE:</h3>
-    <p> Pandas, Spark, Kafka, Geopandas, Matplotlib  </p>
+    <p> Pandas, NLTK, igraph , Spark, Kafka, Geopandas, Matplotlib  </p>
 
     <h3>DATABASES:</h3>
     <p> Postgtres, MongoDB, SQLite </p>

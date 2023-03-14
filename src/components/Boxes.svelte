@@ -79,15 +79,16 @@
                 <li>Professional English for Data Science</li>\
                 <li>Statistical Learning</li>\
                 <li>Statistical Methods</li>\
-                </ul>\
-                <br />\
-                Courses I am currently attending:\
-                <ul>\
                 <li>Advanced social network analysisy</li>\
                 <li>Digital social data</li>\
                 <li>Geospatial analysis and representation for data science</li>\
                 <li>Innovation and Entrepreneurship Basic</li>\
                 <li>Social Dynamics Lab</li>\
+                </ul>\
+                <br />\
+                Courses I am currently attending:\
+                <ul>\
+                <li> Internship at Uppsala Universitet</li>\
                 </ul>\
                 "
             },
@@ -130,21 +131,32 @@
         Experience: [
             {
                 flipped: true,
+                img: "./images/studybuddy.png",
+                title: "Founder",
+                subtitles: [
+                    { flag: 'IT', name: "StudyBuddy", text: ", Brescia, Italy | January 2023 - current", url: "https://studybuddy.it/" }
+                ],
+                description: "StudyBuddy is a platform that allows university students to plan and organize their study."
+
+            },
+            {
+                flipped: true,
+                img: "./images/uu.png",
+                title: "Data Science Internship",
+                subtitles: [
+                    { flag: 'SE', name: "Uppsala Universitet", text: ", Uppsala, Sweden | March - June 2023", url: "https://uuinfolab.github.io/" }
+                ],
+                description: "Analysis of tweets using NLP and network analysis in the context of climate change                       "
+
+            },
+            {
+                flipped: true,
                 img: "./images/wiki.webp",
                 title: "Data Science Internship",
                 subtitles: [
                     { flag: 'Es', name: "Eurecat", text: ", Barcelona, Spain | January - June 2021", url: "https://www.eurecat.org/" }
                 ],
-                description: "Analysis of Reverts and edit wars on wikipedia."
-            },
-            {
-                flipped: true,
-                img: "./images/unitn.png",
-                title: "Linguistic Center Division Test Center and Online Teaching",
-                subtitles: [
-                    { flag: 'It', name: "UniTn", text: ", Trento, Italy | July 2020 - july 2021" }
-                ],
-                description: "Helped professors to handle online degrees on Zoom."
+                description: "Analysis of Reverts and edit wars on wikipedia.                                                           "
             },
             {
                 flipped: true,
@@ -163,7 +175,7 @@
                 subtitles: [
                     { flag: 'It', name: "SOI", text: ", Trento, Italy | July 2022", url: "https://www.soi.unitn.it" }
                 ],
-                description: "Extracurricular program at Università di Trento focused on innovation and entrepreneurship, I'm following the courses: Empathy and innovation, From Idea to business idea. I also attend a challenge called \"Design your future\" in collaboration with Muse a Museum in Trento where the goal is design a game to let children engage with Synthetic biology."
+                description: "Extracurricular program at Università di Trento focused on innovation and entrepreneurship, I'have attended the following the courses: Empathy and innovation, International Entrepreneurship. I also attend a challenge called \"Design your future\" in collaboration with Muse a Museum in Trento where the goal is design a game to let children engage with Synthetic biology."
             }
             // {
             //     // img: "./images/fal.webp",
