@@ -9,6 +9,9 @@
             <ul>                  
                 <li>“NOI Hackathon” in Bolzano (2022) </li>
             </ul>
+            <ul>                  
+                <li>“NOI Hackathon” in Bolzano (2023) - Voice assistant for taxi drivers - 1st position </li>
+            </ul>
         </div>
     </div>
 

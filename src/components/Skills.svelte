@@ -8,16 +8,16 @@
     <p> Python, Typescript, Javascript, R, Bash </p>
 
     <h3>DATA SCIENCE:</h3>
-    <p> Pandas, NLTK, igraph , Spark, Kafka, Geopandas, Matplotlib  </p>
+    <p> Pandas, networkx, openai,  NLTK, igraph, Spark, Kafka, Geopandas, Matplotlib  </p>
 
     <h3>DATABASES:</h3>
-    <p> Postgtres, MongoDB, SQLite </p>
+    <p> Postgres, MongoDB, SQLite </p>
 
     <h3>IT SOFTWARES:</h3>
     <p> Linux, Git, Docker </p>
 
     <h3>CLOUD INFRASTRUCTURE:</h3>
-    <p> Google Cloud </p>
+    <p> Google Cloud, Digital Ocean </p>
 
 
 </div>

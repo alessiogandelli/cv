@@ -8,8 +8,8 @@
 
 
   <div id="about-me" class="section"> <About /> </div>
-  <div id="education" class="section"> <Boxes type='Education' /> </div>
   <div id="experiences" class="section"> <Boxes type='Experience' /> </div>
+  <div id="education" class="section"> <Boxes type='Education' /> </div>
   <div id="skills" class="section"> <Skills /> </div>
   <div id="other-experiences" class="section"> <Boxes type='Projects' /> </div>
   <div id="projects" class="section"> <Projects /> </div>
@@ -17,7 +17,7 @@
   
 
   <footer>
-    <p>Last updated November 2022</p>
+    <p>Last updated September 2024</p>
   </footer>
 </div>
 

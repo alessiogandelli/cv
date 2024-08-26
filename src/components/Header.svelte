@@ -2,12 +2,12 @@
   <div class="title">
     <p class="welcome">{ welcome }</p>
     <h1>I'm Alessio Gandelli</h1>
-    <p>Developer &amp; MSc Data Science Student</p>
+    <p> </p>
   </div>
 </div>
 
 <script lang="ts">
-  const welcomes = [ "Welcome!", "Benvenuto!", "Willkommen!", "Bienvenue!", "¡Bienvenidas!" ]
+  const welcomes = [ "Welcome!", "Benvenuto!", "Willkommen!", "Bienvenue!", "Benvenuta!" ]
   let wIndex = 0;
   let welcome = welcomes[wIndex];
 

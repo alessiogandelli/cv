@@ -59,12 +59,12 @@
         Education: [
             {
                 img: "./images/unitn.png",
-                title: "Attending Master's in Data Science",
+                title: " Master's in Data Science",
                 subtitles: [
-                    { flag: "It", name: "University of Trento", text: ", Trento, Italy | September 2021 - current", url: "https://www.unitn.it/" },
+                    { flag: "It", name: "University of Trento", text: ", Trento, Italy | September 2021 - October 2023", url: "https://www.unitn.it/" },
                 ],
                 description: "\
-                I am currently attending a multidisciplinar Master's degree in Trento in Data Science, with a minor in Sociology.\
+                I attended a multidisciplinar Master's degree in Trento in Data Science, with a minor in Sociology.\
                  ",
                 showMore: false,
                 more: "The complete list of courses I have taken:\
@@ -86,9 +86,9 @@
                 <li>Social Dynamics Lab</li>\
                 </ul>\
                 <br />\
-                Courses I am currently attending:\
+                internship:\
                 <ul>\
-                <li> Internship at Uppsala Universitet</li>\
+                <li> Research activity at Uppsala Universitet</li>\
                 </ul>\
                 "
             },
@@ -132,11 +132,20 @@
             {
                 flipped: true,
                 img: "./images/studybuddy.png",
-                title: "Founder",
+                title: "Co-Founder",
                 subtitles: [
                     { flag: 'IT', name: "StudyBuddy", text: ", Brescia, Italy | January 2023 - current", url: "https://studybuddy.it/" }
                 ],
                 description: "StudyBuddy is a platform that allows university students to plan and organize their study."
+
+            },{
+                flipped: true,
+                img: "./images/uu.png",
+                title: "Visiting Researcher",
+                subtitles: [
+                    { flag: 'SE', name: "Uppsala Universitet", text: ", Uppsala, Sweden | April - June 2024", url: "https://uuinfolab.github.io/" }
+                ],
+                description: "During my visit at the Infolab at Uppsala University, I conducted research on polarization in social media, focusing on climate change discussions during the COP conferences on Twitter. I developed a method to study polarization at the level of individual topics using topic modeling and multi-layer networks, identifying the most polarized topics and analyzing their evolution over time                       "
 
             },
             {
@@ -146,7 +155,7 @@
                 subtitles: [
                     { flag: 'SE', name: "Uppsala Universitet", text: ", Uppsala, Sweden | March - June 2023", url: "https://uuinfolab.github.io/" }
                 ],
-                description: "Analysis of tweets using NLP and network analysis in the context of climate change                       "
+                description: "Created a Python library that performs topic modeling on tweets and builds a multi-layer network with each layer corresponding to a distinct topic.                      "
 
             },
             {
@@ -156,12 +165,12 @@
                 subtitles: [
                     { flag: 'Es', name: "Eurecat", text: ", Barcelona, Spain | January - June 2021", url: "https://www.eurecat.org/" }
                 ],
-                description: "Analysis of Reverts and edit wars on wikipedia.                                                           "
+                description: "Analysis of Reverts and edit wars on wikipedia.                                                                         "
             },
             {
                 flipped: true,
                 img: "./images/saf.jpg",
-                title: "Computer assistant",
+                title: "Computer consultant",
                 subtitles: [
                     { flag: 'It', name: "SAF-GEST srl", text: ", Rodengo Saiano, Italy | June 2020 - current" }
                 ],

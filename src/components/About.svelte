@@ -2,19 +2,23 @@
 <div class="my-info">
     <p><span class="info-name">Name:</span>Alessio Gandelli</p>
     <p><span class="info-name">From:</span>Italy</p>
-    <p><span class="info-name">Age:</span>{ age }</p>
-    <p><span class="info-name">Now in:</span>Uppsala (se) </p>
+    <p><span class="info-name">Now in:</span>Brescia (it) </p>
 </div>
 <div class="about">
     <div class="picture"></div>
+    
     <p>
-        I'm a { age } years old Italian student, currently attending a multidisciplinary MSc in Data Science with domain expertise in Social Sciences and Human behavior. <br> <br>
-        I'm also the co-founder of <a href="https://www.studybuddy.it" target="_blank">StudyBuddy</a>. <br> <br>
+        I'm the co-founder of <a class = 'orange-text' href="https://www.studybuddy.it" target="_blank">StudyBuddy</a>   
+        <br><br> Studybuddy is a all in one productivity platform that help university students with time management and productivity, in order to achieve more in less time and mantain an healthy lifestyle during academic years. <br>
+
+        <br><br>
+        I recently graduated in Data Science with a <a href='https://github.com/alessiogandelli/master-thesis/blob/main/AlessioGandelliThesisFinal.pdf' class= 'orange-text' target='_blank'> thesis </a> where I mixed topic modeling and multilayer network to study political polarization in the climate discussion. 
+        <br>
     </p>
 </div>
 <div class="urls">
     <a href="https://www.github.com/alessiogandelli/"      aria-label="GitHub"   class="themed-icon" target="_blank"><Github   size='48' /> </a>
-    <a href="https://www.linkedin.com/in/alessio-gandelli-36289a181/" aria-label="LinkedIn" class="themed-icon" target="_blank"><Linkedin size='48' /> </a>
+    <a href="https://www.linkedin.com/in/alessiogandelli/" aria-label="LinkedIn" class="themed-icon" target="_blank"><Linkedin size='48' /> </a>
     <a href="mailto:me@gandelli.dev"             aria-label="Email"    class="themed-icon" target="_blank"><Email    size='48' /> </a>
     <a href="https://www.t.me/d8eea/"            aria-label="Telegram" class="themed-icon" target="_blank"><Telegram size='48' /> </a>
 </div>
@@ -37,6 +41,10 @@
 
 
 <style lang="less">
+    .orange-text {
+    color: orange;
+    
+    }   
     .my-info {
         width: fit-content;
         margin: auto;
