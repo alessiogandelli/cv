@@ -1,0 +1,1547 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.path }}",
+              "operation": "endsWith",
+              "value2": ".dart"
+            }
+          ]
+        }
+      },
+      "id": "6cda047d-765f-4958-9646-bb485ef44c9a",
+      "name": "Filter .dart Files",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -1952,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "id": "4e078be9-de8a-4825-ba53-870c917fa275",
+      "name": "Download Raw Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -1728,
+        96
+      ],
+      "credentials": {
+        "githubApi": {
+          "id": "YOUR_GITHUB_CREDENTIAL_ID",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/YOUR_OWNER/YOUR_REPO/git/trees/YOUR_SHA?recursive=1",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -2304,
+        112
+      ],
+      "id": "320be558-3582-40ba-a34d-80b3e0858729",
+      "name": "HTTP Request",
+      "credentials": {
+        "githubApi": {
+          "id": "YOUR_GITHUB_CREDENTIAL_ID",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => ({\n  json: {\n    path: item.json.path,\n    code: Buffer.from(item.json.content, 'base64').toString('utf8')\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1424,
+        96
+      ],
+      "id": "76825d19-bcb5-4fb9-9b4c-417d3dabf55a",
+      "name": "decoder"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst tree = items[0].json.tree;\n\nreturn tree.map(file => ({\n  json: file\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2128,
+        112
+      ],
+      "id": "7b5b99e1-2a1c-4fca-bf6c-f67f891dcd3a",
+      "name": "get file list"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input: items[] where each item.json = { path, code }\n// Output: multiple chunk items per file\n\nconst maxLen = 1200;\n\n// semantic Dart separators\nconst separators = [\n  /\\nclass /,\n  /\\nimport /,\n  /\\nvoid /,\n  /\\nFuture</,\n  /\\nWidget /,\n  /\\n@override/,\n  /\\nenum /,\n  /\\nextends /,\n  /\\nabstract /,\n];\n\nfunction chunkDartCode(code) {\n  const lines = code.split(\"\\n\");\n  const chunks = [];\n  let current = \"\";\n\n  for (const line of lines) {\n    // split on semantic code boundaries\n    if (separators.some(re => re.test(\"\\n\" + line))) {\n      if (current.trim().length > 0) {\n        chunks.push(current.trim());\n        current = \"\";\n      }\n    }\n\n    // normal length-based cutoff\n    if ((current + \"\\n\" + line).length > maxLen) {\n      if (current.trim().length > 0) {\n        chunks.push(current.trim());\n      }\n      current = line;\n    } else {\n      current += \"\\n\" + line;\n    }\n  }\n\n  if (current.trim().length > 0) chunks.push(current.trim());\n  return chunks;\n}\n\nlet out = [];\n\nfor (const item of items) {\n  const file = item.json.path;\n  const code = item.json.code || \"\";\n\n  const codeChunks = chunkDartCode(code);\n\n  codeChunks.forEach((chunk, index) => {\n    out.push({\n      json: {\n        file,\n        chunkIndex: index,\n        content: chunk,\n      },\n    });\n  });\n}\n\nreturn out;\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        96
+      ],
+      "id": "02f68769-6287-49b1-9dcc-ba9ea5e522c5",
+      "name": "chunker"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge original file metadata with blob content\nreturn items.map((item, index) => {\n  const original = $('Filter .dart Files').all()[index].json;\n  return {\n    json: {\n      path: original.path,      // <--- THIS FIXES YOUR PROBLEM\n      content: item.json.content,\n      encoding: item.json.encoding\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1568,
+        96
+      ],
+      "id": "6a690e04-d520-477c-ba02-f5d98d5db5e3",
+      "name": "get filename"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "mongoCollection": {
+          "__rl": true,
+          "value": "codebase",
+          "mode": "list",
+          "cachedResultName": "codebase"
+        },
+        "vectorIndexName": "openai3small",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreMongoDBAtlas",
+      "typeVersion": 1.3,
+      "position": [
+        -768,
+        96
+      ],
+      "id": "f0f7eeac-4383-476a-b686-413c3c6f4021",
+      "name": "MongoDB Atlas Vector Store",
+      "credentials": {
+        "mongoDb": {
+          "id": "NNXmf71ngrfcniaX",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -784,
+        800
+      ],
+      "id": "aa512771-d41a-43eb-a5ef-f4bb7e318f19",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $('format data').item.json.pageContent }}",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "filename",
+                "value": "={{ $('format data').item.json.metadata.filename }}"
+              },
+              {
+                "name": "chunkIndex",
+                "value": "={{ $('format data').item.json.metadata.chunkIndex }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -608,
+        208
+      ],
+      "id": "e80ea6ee-a93a-4cea-b4f9-583d0927836c",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 10000,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        320
+      ],
+      "id": "b3dce3df-fb85-4961-8c12-ec8493c6a4b7",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{  $json.text }}",
+        "options": {
+          "systemMessage": "GitHub Issue Creation Agent - System Prompt\nYou are an AI assistant specialized in creating GitHub issues and providing coding assistance for a specific application. You have access to the entire codebase through a vector store and can help both draft issues and answer development questions.\nCRITICAL: Reasoning Budget\nYou may use reasoning to understand context and make good decisions, but stay within these limits:\n\nMaximum 2-3 reasoning steps per response\nFocus reasoning on: Understanding user intent, identifying relevant files, determining missing info\nDO NOT reason about: Formatting variations, minor wording changes, alternative phrasings\nSTOP reasoning once you have: Clear understanding + decision on what to draft/answer\nNO loops or iterations - Decide → Draft → Done\n\nReasoning checklist (use only what's needed):\n\nWhat is the user asking for? (issue creation or coding help)\nDo I have enough information? (yes/no decision)\nWhich files are relevant? (query vector store once)\n\nThen immediately proceed to output. No refinement loops.\nCore Capabilities\n\nGitHub Issue Creation - Convert user messages into structured issues\nCoding Assistant - Provide development guidance using codebase knowledge\nFile Recommendations - Suggest specific files to edit for GitHub Copilot optimization\n\nCommunication Guidelines\n\nUsers may write in Italian or English - always respond in English\nBe concise and direct - no unnecessary explanations\nFor issue creation: draft and ask for confirmation, don't over-explain\nFor coding questions: provide helpful answers using codebase context\n\n\nGitHub Issue Creation Workflow\nStep 1: Evaluate Completeness\nUse reasoning to assess if you have enough information:\n\nIf enough info exists: Draft the issue immediately\nIf critical info is missing: Reply: \"Not enough info. Need: [list]\"\nBe lenient - infer details from context when reasonable\nDon't overthink - If it's a straightforward request (bug, feature), you likely have enough\n\nSTOP reasoning after this decision. Move to drafting.\nStep 2: Draft Issue Components\nTitle\n\nClear and actionable\nMaximum 80 characters\nSummarizes the core request\n\nDescription\nFor bugs:\n## Steps to Reproduce\n1. [Step-by-step instructions]\n\n## Expected Behavior\n[What should happen]\n\n## Actual Behavior\n[What actually happens]\n\n## Environment\n[Device, OS, app version, browser, etc.]\n\n## Additional Context\n[Any other relevant information]\nFor features/enhancements:\n## Feature Request\n[Brief description]\n\n## Use Case\n[Why this is needed]\n\n## Proposed Solution\n[How to implement it]\n\n## Acceptance Criteria\n- [ ] [Criterion 1]\n- [ ] [Criterion 2]\n- [ ] [Criterion 3]\nFor documentation:\n## Documentation Need\n[What needs documenting]\n\n## Reason\n[Why this documentation is important]\n\n## Scope\n[What should be covered]\nLabels (select all that apply):\n\nbug - Something isn't working\ndocumentation - Improvements or additions to documentation\nduplicate - This issue or pull request already exists\nenhancement - New feature or request\ngood first issue - Good for newcomers\nhelp wanted - Extra attention is needed\ninvalid - This doesn't seem right\nquestion - Further information is requested\nwontfix - This will not be worked on\n\nAssignees:\n\nDefault: [] (empty)\nIf message mentions \"copilot\", \"github copilot\", or \"assign to copilot\": [\"copilot\"]\nIf specific usernames mentioned: include those usernames\n\nChecklist (optional):\n\nAdd task breakdown for multi-step issues\nInclude testing and verification steps\n\nStep 3: File Recommendations\nUse reasoning to identify relevant files from the vector store:\n\nQuery once for relevant code locations\nPick top 2-4 files most directly related to the issue\nDon't iterate on file selection - first good results are sufficient\n\nFormat:\n## Files to Edit\n- `path/to/file.ts` - brief reason\nSTOP reasoning after file selection. Move to output formatting.\nStep 4: Output Format\nPresent the draft issue in a readable format:\n**Title:** [Issue title]\n\n**Description:**\n[Full description with sections]\n\n**Labels:** bug, help wanted\n\n**Assignees:** copilot\n\n**Files to Edit:**\n- path/to/file1.ts - reason\n- path/to/file2.tsx - reason\n\n---\nConfirm to create this issue? (yes/no)\n\nCoding Assistant Mode\nWhen users ask coding questions (not issue creation):\n\nUse reasoning to: Understand the question and identify relevant codebase parts\nQuery vector store once for relevant files/code\nProvide direct answer with specific references\nSTOP after answering - no follow-up elaborations unless asked\n\nReasoning budget: Understand question → Find relevant code → Answer. That's it.\nExample responses:\n\n\"That logic is in src/utils/validators.ts. Here's how it works: [explanation]\"\n\"Looking at your auth flow in src/services/auth.ts, you should add...\"\n\"Similar pattern exists in components/UserProfile.tsx - check lines 45-60\"\n\n\nExample Interactions\nExample 1: Bug Report\nUser: \"Login page freezes on mobile after entering password\"\nAssistant:\n**Title:** Login page freezes on mobile after password entry\n\n**Description:**\n## Steps to Reproduce\n1. Open the app on a mobile device\n2. Enter username and password\n3. Press 'Login'\n\n## Expected Behavior\nThe app should log in successfully and navigate to the dashboard.\n\n## Actual Behavior\nThe app freezes and becomes unresponsive after pressing the login button.\n\n## Environment\n- Mobile devices (iOS and Android)\n- Latest app version\n\n## Files to Edit\n- `src/components/LoginForm.tsx` - Login form component\n- `src/services/authService.ts` - Authentication logic\n- `src/styles/mobile.css` - Mobile-specific styling\n\n**Labels:** bug, help wanted\n\n**Assignees:** []\n\n---\nConfirm to create this issue?\nExample 2: Feature Request\nUser: \"voglio aggiungere la dark mode alla settings page, assegnalo a copilot\"\nAssistant:\n**Title:** Add dark mode support to settings page\n\n**Description:**\n## Feature Request\nImplement dark mode theme option in the settings page.\n\n## Use Case\nUsers want the ability to switch between light and dark themes for better accessibility and reduced eye strain.\n\n## Proposed Solution\nAdd a theme toggle in settings that switches between light and dark modes, persisting the user's preference.\n\n## Acceptance Criteria\n- [ ] Theme toggle added to settings page\n- [ ] Dark mode styles applied consistently\n- [ ] User preference saved and persists across sessions\n- [ ] Smooth transition between themes\n\n## Files to Edit\n- `src/pages/SettingsPage.tsx` - Settings page component\n- `src/context/ThemeContext.tsx` - Theme state management\n- `src/styles/themes.css` - Theme definitions\n\n**Labels:** enhancement\n\n**Assignees:** copilot\n\n---\nConfirm to create this issue?\nExample 3: Coding Question\nUser: \"How is authentication handled in the app?\"\nAssistant:\nAuthentication is managed in `src/services/authService.ts`. The flow:\n\n1. User credentials → `login()` function\n2. API call to `/auth/login` endpoint\n3. JWT token stored in `localStorage`\n4. Token attached to requests via `src/interceptors/authInterceptor.ts`\n\nProtected routes check token validity in `src/components/PrivateRoute.tsx`. Need help with a specific auth feature?\n\nKey Reminders\n✓ Create Issue in English always but you can discuss in all languages\n✓ Reason efficiently - 2-3 steps maximum, then output\n✓ No reasoning loops - Understand → Decide → Draft → Done\n✓ Don't refine or iterate - first good draft is final\n✓ Stop after answering - no unnecessary follow-ups\n✓ One vector store query per task\n✓ Trust your first decisions - they're usually right\nIf you find yourself reasoning about the same thing twice, STOP and output immediately.",
+          "maxIterations": 4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -1808,
+        624
+      ],
+      "id": "c48fe8a4-cec3-472c-80ec-95d3f8fdf7e2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "can retreive data about my codebase so it can help find the correct filenames crafting the github issue",
+        "mongoCollection": {
+          "__rl": true,
+          "value": "codebase",
+          "mode": "list",
+          "cachedResultName": "codebase"
+        },
+        "vectorIndexName": "openai3small",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreMongoDBAtlas",
+      "typeVersion": 1.3,
+      "position": [
+        -1024,
+        672
+      ],
+      "id": "316102bd-fbcc-4524-b199-2189d348a508",
+      "name": "MongoDB Atlas Vector Store1",
+      "credentials": {
+        "mongoDb": {
+          "id": "YOUR_MONGODB_CREDENTIAL_ID",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -1696,
+        832
+      ],
+      "id": "36e3310d-be4a-436b-beb2-7b71ad5bbe88",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Map your custom chunks to the structure LangChain expects\nreturn $input.all().map(item => {\n  return {\n    json: {\n      // The text to be embedded MUST be in a field named 'pageContent'\n      pageContent: item.json.content, \n      \n      // Your metadata MUST be in an object named 'metadata'\n      metadata: {\n        filename: item.json.file,\n        chunkIndex: item.json.chunkIndex\n      }\n    }\n  }\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -976,
+        96
+      ],
+      "id": "e82ca5fd-7797-45f3-b1d9-11f0f1c52047",
+      "name": "format data"
+    },
+    {
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "value": "owner",
+          "mode": "list",
+          "cachedResultName": "owner",
+          "cachedResultUrl": "https://github.com/owner"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "repo",
+          "mode": "list",
+          "cachedResultName": "repo",
+          "cachedResultUrl": "https://github.com/owner/repo"
+        },
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}",
+        "body": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Body', ``, 'string') }}",
+        "labels": [
+          {
+            "label": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('labels0_Label', ``, 'string') }}"
+          }
+        ],
+        "assignees": []
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        -1520,
+        800
+      ],
+      "id": "f805bb4f-80eb-48fe-8380-95fe7eb934c5",
+      "name": "Create an issue in GitHub",
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "credentials": {
+        "githubApi": {
+          "id": "YOUR_GITHUB_CREDENTIAL_ID",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "value": "owner",
+          "mode": "list",
+          "cachedResultName": "owner",
+          "cachedResultUrl": "https://github.com/owner"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "repo",
+          "mode": "list",
+          "cachedResultName": "repo",
+          "cachedResultUrl": "https://github.com/owner/repo"
+        },
+        "events": [
+          "push"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.githubTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2512,
+        -320
+      ],
+      "id": "8da40290-670d-4d03-bcee-b662f8306abd",
+      "name": "Github Trigger",
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "credentials": {
+        "githubApi": {
+          "id": "YOUR_GITHUB_CREDENTIAL_ID",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the commits from the trigger\nconst commits =$input.first().json.body.commits;\nconst owner = $input.first().json.body.repository.owner.login; \nconst repo = $input.first().json.body.repository.name;$input.first()\nconst branch = $input.first().json.body.ref.replace('refs/heads/', '');\n\n\n// Use Sets to track unique files (avoid duplicates if file modified twice in one push)\nconst filesToIngest = new Set();\nconst filesToDelete = new Set();\n\nfor (const commit of commits) {\n  // 1. Files that need new vectors (Added + Modified)\n  commit.added.forEach(path => filesToIngest.add(path));\n  commit.modified.forEach(path => filesToIngest.add(path));\n\n  // 2. Files that need old vectors removed (Removed + Modified)\n  commit.removed.forEach(path => filesToDelete.add(path));\n  commit.modified.forEach(path => filesToDelete.add(path));\n}\n\n// Helper to filter for .dart only\nconst isDart = (path) => path.endsWith('.dart');\n\n// Prepare Output 1: Files to Delete (Cleanup)\nconst deleteQueue = Array.from(filesToDelete)\n  .filter(isDart)\n  .map(path => ({ json: { \n    path :path.replace(/^lib\\//, \"\"), \n    operation: \"delete\",\n    date: $now,\n    commit: $input.first().json.body.commits[0].id\n  \n  } }));\n\n// Prepare Output 2: Files to Ingest (Download)\nconst ingestQueue = Array.from(filesToIngest)\n  .filter(isDart)\n  .map(path => ({ json: { \n    path: path.replace(/^lib\\//, \"\"),\n    operation: \"ingest\",\n    url: `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`,\n    date: $now,\n    commit: $input.first().json.body.commits[0].id\n\n    } \n  }));\n\n// Return data on two separate branches (optional) or just merge\n// For simplicity, we return everything. You can split them with an IF node next.\nreturn [ ...deleteQueue, ...ingestQueue ];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2336,
+        -320
+      ],
+      "id": "3b9e81f0-5d95-454a-b30c-9d5654526dc5",
+      "name": "get new files"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "delete",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "43835982-2d71-4f22-b3f6-b6c1b8caaeb1"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "delete"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2217b2f9-2053-4e95-84ff-81a6e9c2390e",
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "ingest",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ingest"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -2144,
+        -320
+      ],
+      "id": "a6cbdf12-64ff-45c9-b8c1-b021b113dfd8",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "collection": "codebase",
+        "query": "={\n  \"filename\": \"{{ $json.path }}\"\n}"
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.2,
+      "position": [
+        -1856,
+        -400
+      ],
+      "id": "e07a3e00-baf8-42f4-a4cb-dc080912df99",
+      "name": "Delete documents",
+      "credentials": {
+        "mongoDb": {
+          "id": "NNXmf71ngrfcniaX",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1856,
+        -224
+      ],
+      "id": "70ed1ba9-a9bf-49b4-b380-7025c0109e1d",
+      "name": "HTTP Request1",
+      "credentials": {
+        "githubApi": {
+          "id": "YOUR_GITHUB_CREDENTIAL_ID",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "value": "YOUR_GCP_PROJECT_ID",
+          "mode": "id"
+        },
+        "modelName": "gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        -1808,
+        816
+      ],
+      "id": "ff536304-6170-405a-84c5-5d3a91b2272f",
+      "name": "Google Vertex Chat Model",
+      "credentials": {
+        "googleApi": {
+          "id": "YOUR_GOOGLE_API_CREDENTIAL_ID",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## new files to embed on push \n",
+        "height": 400,
+        "width": 1264
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2560,
+        -480
+      ],
+      "typeVersion": 1,
+      "id": "f2054472-3850-40c6-a5c1-6600716d444c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2512,
+        112
+      ],
+      "id": "4f9b91cf-d0db-4481-ab9a-d4b5ae822135",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "content": "## all codebase files\n",
+        "height": 352,
+        "width": 1312,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2576,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "78f20463-9cc2-41bd-a4ee-a6a7bc547124",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## chunk and ingest documents\n",
+        "height": 464,
+        "width": 816,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1168,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "404fe835-65cc-4b5e-8bff-b7291b6ff8ac",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## AI agent",
+        "height": 464,
+        "width": 672,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2016,
+        496
+      ],
+      "typeVersion": 1,
+      "id": "a5788d83-3060-4e5a-9a06-c20873e7241c",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## codebase retrieval\n",
+        "height": 384,
+        "width": 576,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1184,
+        544
+      ],
+      "typeVersion": 1,
+      "id": "d20667b0-cec2-4797-bde4-9901c00b5e18",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3248,
+        640
+      ],
+      "id": "f49f16a9-2f89-4218-bc62-1d5b8532e381",
+      "name": "Telegram Trigger",
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1504,
+        624
+      ],
+      "id": "d7b401cd-fbbb-4f0c-b989-36e653fba550",
+      "name": "Send a text message",
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Yfccd6gmrzJLjQSrZiGRyjiEsmd9GmE0A4LnyxgSZ48",
+          "mode": "list",
+          "cachedResultName": "log_codebase_rag",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Yfccd6gmrzJLjQSrZiGRyjiEsmd9GmE0A4LnyxgSZ48/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Foglio1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Yfccd6gmrzJLjQSrZiGRyjiEsmd9GmE0A4LnyxgSZ48/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "path",
+              "displayName": "path",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "operation",
+              "displayName": "operation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "commit",
+              "displayName": "commit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1696,
+        -720
+      ],
+      "id": "d079705c-d9c6-4de5-bcae-e0a4e447b36d",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "YOUR_GOOGLE_API_CREDENTIAL_ID",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Yfccd6gmrzJLjQSrZiGRyjiEsmd9GmE0A4LnyxgSZ48",
+          "mode": "list",
+          "cachedResultName": "log_codebase_rag",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Yfccd6gmrzJLjQSrZiGRyjiEsmd9GmE0A4LnyxgSZ48/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 75460310,
+          "mode": "list",
+          "cachedResultName": "commits",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Yfccd6gmrzJLjQSrZiGRyjiEsmd9GmE0A4LnyxgSZ48/edit#gid=75460310"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "commit_id": "={{ $json.body.commits[0].id }}",
+            "commit_message": "={{ $json.body.commits[0].message }}",
+            "author": "={{ $json.body.commits[0].author.name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "commit_id",
+              "displayName": "commit_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "commit_message",
+              "displayName": "commit_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "author",
+              "displayName": "author",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2016,
+        -736
+      ],
+      "id": "b2fdd232-ca95-4159-a8d6-7230e32f7db7",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleApi": {
+          "id": "YOUR_GOOGLE_API_CREDENTIAL_ID",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## log edits on a google sheet \n",
+        "height": 240,
+        "width": 624,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2080,
+        -800
+      ],
+      "typeVersion": 1,
+      "id": "48db70b1-8ab2-4bdc-ad01-f383fa559ebf",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5c2a657d-e5c6-4022-9dba-d5ea54951666",
+              "leftValue": "={{ $json.message.from.id }}",
+              "rightValue": "={{529895213}}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "912c8848-34a2-4092-8695-c54910e5a426",
+              "leftValue": "={{ $json.message.from.id }}",
+              "rightValue": "={{102841323}}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3120,
+        640
+      ],
+      "id": "92b3e3f2-caac-4ab6-b0d3-43e195a3518f",
+      "name": "is admin"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const d = item.json;\n  const text = d.text ?? d.message?.text ?? d.candidates[0].content.parts[0].text;\n  return { json: { text, original: d } };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1984,
+        640
+      ],
+      "id": "7f9f245f-089d-4003-b237-4bd155af2ee5",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "content": "## Telegram input",
+        "height": 464,
+        "width": 1168,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3280,
+        496
+      ],
+      "typeVersion": 1,
+      "id": "68d57a5f-a35e-4911-a606-33dee560c713",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.photo }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "array",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "509d0f9e-5825-484f-8ef5-4e28545dcd45"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "79d6dc46-5e41-439f-846a-f24a411757d4",
+                    "leftValue": "={{ $json.message.voice }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "voice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "92b2b3d4-5bba-44db-a7d2-c6051e5dd225",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -2960,
+        608
+      ],
+      "id": "dca6cfc9-5a5b-47e6-8db7-89399fb0673f",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8c85d914-5183-40b8-b255-9e673a9d1ad6",
+              "name": "model",
+              "value": "gemini-2.5-pro",
+              "type": "string"
+            },
+            {
+              "id": "368d87f3-da67-48b5-b2a5-853ab832b681",
+              "name": "project_id",
+              "value": "YOUR_GCP_PROJECT_ID",
+              "type": "string"
+            },
+            {
+              "id": "ad172c87-628f-4f03-83d4-f8258cc43be5",
+              "name": "file_id",
+              "value": "={{ $json.message.photo[1].file_id }}",
+              "type": "string"
+            },
+            {
+              "id": "bb0131d4-5010-41c4-b4a3-c463524be3cb",
+              "name": "type",
+              "value": "image",
+              "type": "string"
+            },
+            {
+              "id": "6ae0a967-6531-4ec2-a11a-f157cb2b44b2",
+              "name": "prompt",
+              "value": "describe this image with the goal to finding bugs and problems since this will be used to debug",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2784,
+        544
+      ],
+      "id": "30836749-3ef8-42c4-b118-4eb9dfb7cbc6",
+      "name": "set image params"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8c85d914-5183-40b8-b255-9e673a9d1ad6",
+              "name": "model",
+              "value": "gemini-2.5-flash",
+              "type": "string"
+            },
+            {
+              "id": "368d87f3-da67-48b5-b2a5-853ab832b681",
+              "name": "project_id",
+              "value": "YOUR_GCP_PROJECT_ID",
+              "type": "string"
+            },
+            {
+              "id": "6192b5f9-c52f-4d6b-b65c-6a2c320909d4",
+              "name": "file_id",
+              "value": "={{ $json.message.voice.file_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ad2c1882-eddd-4b0e-9ffc-90980a8e06dc",
+              "name": "type",
+              "value": "voice",
+              "type": "string"
+            },
+            {
+              "id": "3ebfb6db-c8a1-403d-9c8b-7b217296c600",
+              "name": "prompt",
+              "value": "transcribe this audio, it could be english or italian",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2784,
+        672
+      ],
+      "id": "c9fb66bb-0762-45eb-abfa-17fd48df4cad",
+      "name": "set audio params"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2608,
+        640
+      ],
+      "id": "4001bc3a-f15a-4883-b9ce-7ece550e32cc",
+      "name": "get file",
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convert the binary data to a Base64 string for the API\nconst binaryPropertyName = 'data'; // The default name of the binary property\nconst binaryData = items[0].binary[binaryPropertyName];\nlet config ;\ntry{\n   config =  $('set image params').first().json\n}catch{}\n\ntry{\n config =  $('set audio params').first().json\n}catch{}\n\n\n\n\nreturn {\n  json: {\n    mimeType: binaryData.mimeType,\n    base64: binaryData.data,\n    input_type: config.type,\n    model: config.model,\n    project_id: config.project_id,\n    prompt: config.prompt\n  }\n};"
+      },
+      "id": "1e6acbb9-66ca-40d0-b265-e4cc178d2497",
+      "name": "prepare data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2448,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://YOUR_REGION-aiplatform.googleapis.com/v1/projects/{{ $json.project_id }}/locations/YOUR_REGION/publishers/google/models/{{$json.model}}:generateContent\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"inlineData\": {\n            \"mimeType\": \"{{ $json.mimeType }}\",\n            \"data\": \"{{ $json.base64 }}\"\n          }\n        },\n        {\n          \"text\": \"{{ $json.prompt }}\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 1,\n    \"maxOutputTokens\": 2048,\n    \"topP\": 0.95\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -2320,
+        640
+      ],
+      "id": "aa16228a-e120-4a45-9046-c1a636c60773",
+      "name": "vertex ai",
+      "credentials": {
+        "googleApi": {
+          "id": "YOUR_GOOGLE_API_CREDENTIAL_ID",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map((item, index) => {\n\n  return {\n    json: {\n      path: $('get new files').all()[index].json.path,      // <--- THIS FIXES YOUR PROBLEM\n      code: item.json.data\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1456,
+        -224
+      ],
+      "id": "6a7a448a-fccb-4c0b-94a3-68ac79ebda11",
+      "name": "prepare data1"
+    }
+  ],
+  "connections": {
+    "Filter .dart Files": {
+      "main": [
+        [
+          {
+            "node": "Download Raw Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Raw Content": {
+      "main": [
+        [
+          {
+            "node": "get filename",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "get file list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "decoder": {
+      "main": [
+        [
+          {
+            "node": "chunker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get file list": {
+      "main": [
+        [
+          {
+            "node": "Filter .dart Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "chunker": {
+      "main": [
+        [
+          {
+            "node": "format data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get filename": {
+      "main": [
+        [
+          {
+            "node": "decoder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "MongoDB Atlas Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "MongoDB Atlas Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "MongoDB Atlas Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB Atlas Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "format data": {
+      "main": [
+        [
+          {
+            "node": "MongoDB Atlas Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an issue in GitHub": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Github Trigger": {
+      "main": [
+        [
+          {
+            "node": "get new files",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get new files": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Delete documents",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "prepare data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "is admin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "is admin": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "set image params",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "set audio params",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set image params": {
+      "main": [
+        [
+          {
+            "node": "get file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set audio params": {
+      "main": [
+        [
+          {
+            "node": "get file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get file": {
+      "main": [
+        [
+          {
+            "node": "prepare data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prepare data": {
+      "main": [
+        [
+          {
+            "node": "vertex ai",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vertex ai": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prepare data1": {
+      "main": [
+        [
+          {
+            "node": "chunker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+
+}

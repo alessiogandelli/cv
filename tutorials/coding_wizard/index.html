@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automating Codebase Management with n8n and AI - Alessio Gandelli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @layer utilities {
+            .bg-deep-purple { background-color: rgb(44, 29, 95); }
+            .text-deep-purple { color: #2a0845; }
+            .text-orange { color: #f97316; }
+            .hover\:text-orange:hover { color: #f97316; }
+            .backdrop-blur { backdrop-filter: blur(8px); }
+        }
+        
+        /* Code block styling */
+        pre {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        /* Article content styling */
+        article h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f97316;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        article h3 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #f97316;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        article p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+        
+        article ul, article ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        article li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        
+        article a {
+            color: #f97316;
+            text-decoration: underline;
+        }
+        
+        article a:hover {
+            opacity: 0.8;
+        }
+        
+        .highlight-box {
+            background-color: rgba(249, 115, 22, 0.1);
+            border-left: 4px solid #f97316;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0.25rem;
+        }
+        
+        /* Image styling */
+        article img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            margin: 2rem auto;
+            display: block;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .image-caption {
+            text-align: center;
+            font-size: 0.875rem;
+            color: #9ca3af;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="bg-deep-purple text-white font-sans">
+    <!-- Header with back button -->
+    <header class="sticky top-0 w-full bg-deep-purple/90 backdrop-blur shadow-lg z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../index.html" class="inline-flex items-center gap-2 hover:text-orange transition-colors duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to Home
+            </a>
+            <a href="en.html" class="inline-flex items-center gap-2 px-4 py-2 bg-orange bg-opacity-20 hover:bg-opacity-30 rounded-lg transition-all duration-200">
+                🇬🇧 English
+            </a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-10 max-w-4xl">
+        <!-- Article Header -->
+        <header class="mb-12">
+            <h1 class="text-4xl font-extrabold text-orange mb-4">Come Ho Automatizzato la Gestione del Mio Codebase con n8n e AI</h1>
+            <p class="text-xl text-gray-300 mb-4">Un'automazione completa che trasforma il tuo repository GitHub in un assistente intelligente per creare issue e rispondere a domande sul codice.</p>
+            <div class="flex flex-wrap gap-2 mb-6">
+                <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-sm font-medium">n8n</span>
+                <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-sm font-medium">MongoDB Atlas</span>
+                <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-sm font-medium">Vertex AI</span>
+                <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-sm font-medium">Telegram</span>
+                <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-sm font-medium">RAG</span>
+            </div>
+        </header>
+
+        <!-- Table of Contents -->
+        <nav class="bg-white bg-opacity-5 rounded-lg p-6 mb-12">
+            <h2 class="text-2xl font-bold text-orange mb-4">Indice</h2>
+            <ol class="space-y-2">
+                <li><a href="#overview" class="hover:text-orange transition-colors">1. Panoramica del Sistema</a></li>
+                <li><a href="#indexing" class="hover:text-orange transition-colors">2.  Indicizzazione del Codebase</a></li>
+                <li><a href="#sync" class="hover:text-orange transition-colors">3.  Aggiornamenti Automatici su Push</a></li>
+                <li><a href="#ai-agent" class="hover:text-orange transition-colors">4. AI Agent con Telegram</a></li>
+                <li><a href="#rag" class="hover:text-orange transition-colors">5. Come Funziona il RAG</a></li>
+                <li><a href="#results" class="hover:text-orange transition-colors">6. Risultati Pratici</a></li>
+                <li><a href="#next-steps" class="hover:text-orange transition-colors">7. Next Steps</a></li>
+            </ol>
+        </nav>
+
+        <!-- Article Content -->
+        <article>
+            <!-- Section 1: Overview -->
+            <section id="overview">
+                <h2>1. Panoramica del Sistema</h2>
+                <p>Questa automazione n8n è composta da tre flussi principali:</p>
+                <ul class="list-disc">
+                    <li><strong>Indicizzazione iniziale</strong>: Scarica tutto il codebase e lo carica in un vector store</li>
+                    <li><strong>Sync automatico</strong>: Ogni push su GitHub aggiorna automaticamente i file modificati</li>
+                    <li><strong>AI Assistant</strong>: Un bot Telegram che usa il codebase per creare GitHub issues e rispondere a domande</li>
+                </ul>
+                
+                <!-- Image placeholder for system architecture -->
+      
+                <img src="images/architecturen8n.png" alt="System Architecture Diagram" class="mx-auto my-8 rounded-lg shadow-lg"/>
+                
+                <div class="highlight-box">
+                    <p class="font-semibold mb-2">Stack tecnologico:</p>
+                    <ul class="list-disc ml-4">
+                        <li>n8n per l'orchestrazione</li>
+                        <li>MongoDB Atlas come vector store</li>
+                        <li>Google Vertex AI (Gemini 2.5 Pro) come LLM</li>
+                        <li>Telegram come interfaccia utente</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 2: Indexing -->
+            <section id="indexing">
+                <h2>2. Indicizzazione della Codebase</h2>
+                
+                <h3>Il Flusso di Base</h3>
+                <p>Il primo step è scaricare tutti i file <code>.dart</code> dal repository GitHub e prepararli per l'embedding.</p>
+                
+                <p><strong>Nodi principali:</strong></p>
+                <ol class="list-decimal">
+                    <li><code>HTTP Request</code> → Scarica l'albero dei file dal GitHub API</li>
+                    <li><code>get file list</code> → Trasforma l'albero in una lista di file</li>
+                    <li><code>Filter .dart Files</code> → Filtra solo i file Dart</li>
+                    <li><code>Download Raw Content</code> → Scarica il contenuto grezzo di ogni file</li>
+                </ol>
+
+                <p>Puoi ottenere l'elenco completo dei file usando l'endpoint tree della GitHub API: sostituisci "owner/tuo-repo" con il tuo repository e "SHA_DEL_COMMIT" con lo sha del commit che vuoi esplorare.</p>
+                
+                <pre><code>https://api.github.com/repos/OWNER/TUA-REPO/git/trees/SHA_DEL_COMMIT?recursive=1</code></pre>
+
+                <p>Sostituendo <code>OWNER/TUA-REPO</code> e lo <code>SHA</code> ottieni tutti i file presenti in quel commit.</p>
+
+                <!-- Image placeholder for indexing workflow -->
+                <img src="images/ingest_codebase.png" alt="Indexing Workflow Diagram" class="mx-auto my-8 rounded-lg shadow-lg"/>
+
+                <h3>Il Chunking Intelligente</h3>
+                <p>Qui entra in gioco la parte interessante. Non possiamo mettere interi file nel vector store - sono troppo grandi. Dobbiamo fare "chunking", ma in modo intelligente.</p>
+                
+                <pre><code>// Il codice cerca separatori semantici nel codice Dart
+const separators = [
+  /\nclass /,
+  /\nimport /,
+  /\nvoid /,
+  /\nFuture</,
+  /\nWidget /,
+  /\n@override/,
+  /\nenum /,
+  /\nextends /,
+  /\nabstract /,
+];</code></pre>
+
+                <p>Invece di tagliare il codice a caso ogni X caratteri, il nodo <code>chunker</code> cerca di dividere su confini semantici - quando inizia una nuova classe, un import, una funzione, etc. Questo mantiene il contesto intatto.</p>
+                
+                <p class="font-semibold">Massima lunghezza chunk: 1200 caratteri</p>
+
+                <h3>Formato dei Dati</h3>
+                <p>Ogni chunk viene strutturato così:</p>
+                
+                <pre><code>{
+  file: "path/to/file.dart",
+  chunkIndex: 0,
+  content: "class MyWidget extends StatelessWidget..."
+}</code></pre>
+
+                <p>E poi trasformato :</p>
+                
+                <pre><code>{
+  pageContent: "class MyWidget...",
+  metadata: {
+    filename: "path/to/file.dart",
+    chunkIndex: 0
+  }
+}</code></pre>
+
+                <h3>Embeddings e Storage</h3>
+                <ul class="list-disc">
+                    <li>Gli embeddings vengono generati e salvati in <strong>MongoDB Atlas</strong> con indice vettoriale</li>
+                    <li>Ogni chunk è ricercabile semanticamente</li>
+                </ul>
+            </section>
+
+            <img src="images/chunk_e_ingest.png" alt="MongoDB Vector Index" class="mx-auto my-8 rounded-lg shadow-lg"/>
+
+            <!-- Section 3: Sync -->
+            <section id="sync">
+                <h2>3. Aggiornamenti Automatici su Push</h2>
+                
+                <h3>Il Problema</h3>
+                <p>Indicizzare tutto il codebase va bene la prima volta, ma cosa succede quando fai un commit? Non voglio ri-indicizzare tutto ogni volta.</p>
+
+                <h3>La Soluzione: Incremental Updates</h3>
+                <p>Il nodo <code>Github Trigger</code> ascolta gli eventi di push e il nodo <code>get new files</code> processa i commit per capire cosa è cambiato:</p>
+                
+                <pre><code>const filesToIngest = new Set();  // File nuovi o modificati
+const filesToDelete = new Set();  // File rimossi o modificati
+
+for (const commit of commits) {
+  commit.added.forEach(path => filesToIngest.add(path));
+  commit.modified.forEach(path => {
+    filesToIngest.add(path);   // Ri-indicizza versione nuova
+    filesToDelete.add(path);   // Rimuovi versione vecchia
+  });
+  commit.removed.forEach(path => filesToDelete.add(path));
+}</code></pre>
+
+                <!-- Image placeholder for sync workflow -->
+                <img src="images/new_files.png" alt="Sync Workflow Diagram" class="mx-auto my-8 rounded-lg shadow-lg"/>
+
+                <h3>Due Branch Separati</h3>
+                <p>Il nodo <code>Switch</code> divide il flusso:</p>
+                <ul class="list-disc">
+                    <li><strong>Branch "delete"</strong>: Rimuove i vecchi documenti da MongoDB</li>
+                    <li><strong>Branch "ingest"</strong>: Scarica e indicizza i nuovi file</li>
+                </ul>
+
+                <p><strong>Esempio di operazione delete:</strong></p>
+                <pre><code>{
+  "operation": "delete",
+  "collection": "codebase",
+  "query": "{ \"filename\": \"lib/screens/home.dart\" }"
+}</code></pre>
+
+                <h3>Logging su Google Sheets</h3>
+                <p>Ogni modifica viene loggata su un Google Sheet con:</p>
+                <ul class="list-disc">
+                    <li>Path del file</li>
+                    <li>Operazione (delete/ingest)</li>
+                    <li>Timestamp</li>
+                    <li>Commit ID</li>
+                    <li>Author</li>
+                </ul>
+                <p>Questo permette di avere uno storico completo delle modifiche al vector store.</p>
+            </section>
+
+            <!-- Section 4: AI Agent -->
+            <section id="ai-agent">
+                <h2>4. AI Agent con Telegram</h2>
+                
+                <h3>L'Interfaccia Utente</h3>
+                <p>Ho scelto Telegram come interfaccia perché:</p>
+                <ul class="list-disc">
+                    <li>È veloce</li>
+                    <li>Supporta voice messages</li>
+                    <li>È sempre a portata di mano sul telefono</li>
+                    <li>Ha una buona API</li>
+                </ul>
+
+                <h3>Il Flusso Telegram</h3>
+                <ol class="list-decimal">
+                    <li><code>Telegram Trigger</code> → Riceve i messaggi</li>
+                    <li><code>is admin</code> → Verifica che sia io o un utente autorizzato</li>
+                    <li><code>Switch1</code> → Distingue tra testo, foto e audio</li>
+                    <li><code>Code in JavaScript1</code> → Estrae il testo dal messaggio</li>
+                    <li><code>AI Agent</code> → Processa la richiesta</li>
+                </ol>
+
+                <!-- Image placeholder for Telegram interaction -->
+                <img src="images/telegram_agent.png" alt="Telegram Interaction Workflow" class="mx-auto my-8 rounded-lg shadow-lg"/>
+
+                <h3>Supporto Multimodale</h3>
+                <p><strong>Voice Messages:</strong></p>
+                <ul class="list-disc">
+                    <li>Scaricati via Telegram API</li>
+                    <li>Trascritti con gemini con le api di vertex AI</li>
+                    <li>Processati come testo normale</li>
+                </ul>
+
+                <p><strong>Immagini:</strong></p>
+                <ul class="list-disc">
+                    <li>Analizzate sempre con Gemini</li>
+                    <li>L'idea è analizzarle per screenshot di UI/bug</li>
+                </ul>
+
+                <h3>L'AI Agent</h3>
+                <p>Il cuore del sistema è il nodo <code>AI Agent</code> configurato con:</p>
+                
+                <p><strong>LLM:</strong> Google Vertex AI - Gemini 2.5 Pro</p>
+                <p class="text-sm text-gray-400 ml-4">uso google perchè ho crediti omaggio da vertex</p>
+
+                <p><strong>Tools disponibili:</strong></p>
+                <ol class="list-decimal">
+                    <li><code>MongoDB Atlas Vector Store</code> → Cerca nel codebase</li>
+                    <li><code>Create an issue in GitHub</code> → Crea issue automaticamente</li>
+                </ol>
+
+                <p><strong>Memory:</strong> Buffer window memory</p>
+                <ul class="list-disc">
+                    <li>Mantiene la conversazione contestuale</li>
+                    <li>Una session per ogni chat Telegram</li>
+                </ul>
+
+                <h3>Il System Prompt</h3>
+                <p>Il prompt è lungo e dettagliato, ma i punti chiave sono:</p>
+                
+                <div class="highlight-box">
+                    <p class="font-semibold">Core Capabilities:</p>
+                    <ol class="list-decimal ml-4">
+                        <li>GitHub Issue Creation - Convert user messages into structured issues</li>
+                        <li>Coding Assistant - Provide development guidance using codebase knowledge</li>
+                        <li>File Recommendations - Suggest specific files to edit</li>
+                    </ol>
+                </div>
+
+                <h3>Reasoning Budget</h3>
+                <p>Una cosa interessante nel prompt è il "reasoning budget":</p>
+                
+                <pre><code>Maximum 2-3 reasoning steps per response
+NO loops or iterations - Decide → Draft → Done</code></pre>
+
+                <p>Questo forza l'agent a essere efficiente e non sprecare token in ragionamenti inutili.</p>
+            </section>
+
+            <!-- Section 5: RAG -->
+            <section id="rag">
+                <h2>5. Come Funziona il RAG</h2>
+                
+                <h3>Retrieval-Augmented Generation</h3>
+                <p>RAG = Recuperare informazioni rilevanti prima di generare una risposta.</p>
+
+                <p><strong>Il processo:</strong></p>
+                <ol class="list-decimal">
+                    <li><strong>User query</strong> → "non funziona il bottone per selezionare l'esame nel timer?"</li>
+                    <li><strong>Embedding della query</strong> → Converte la domanda in un vettore numerico</li>
+                    <li><strong>Similarity search</strong> → Cerca i chunk più simili nel vector store</li>
+                </ol>
+
+                <pre><code>Query vector: [0.23, -0.45, 0.12, ...]
+
+Top results:
+- pages/timer/button.dart (similarity: 0.89)
+- pages/timer/exam_selector.dart (similarity: 0.82)
+- src/interceptors/authInterceptor.ts (similarity: 0.78)</code></pre>
+
+
+
+                <ol class="list-decimal" start="4">
+                    <li><strong>Context injection</strong> → I chunk rilevanti vengono passati all'LLM</li>
+                    <li><strong>Response generation</strong> → L'LLM genera la risposta usando il contesto</li>
+                </ol>
+
+                <h3>Perché Funziona</h3>
+                <ul class="list-disc">
+                    <li><strong>Semantic search</strong>: Non cerca parole chiave, ma significato</li>
+                    <li><strong>Contesto preciso</strong>: Solo le parti rilevanti del codice</li>
+                    <li><strong>Sempre aggiornato</strong>: Il vector store si sincronizza con ogni push</li>
+                </ul>
+            </section>
+
+            <!-- Section 6: Results -->
+            <section id="results">
+                <h2>6. Risultati Pratici</h2>
+                
+                <h3>Cosa Posso Fare Ora</h3>
+                
+                <div class="bg-white bg-opacity-5 rounded-lg p-6 mb-6">
+                    <p class="font-semibold mb-2">1. Creare issue velocemente</p>
+                    <pre><code>Telegram: "voglio aggiungere dark mode alla settings page, assegnalo a copilot"
+Bot: [Draft completo della issue con file da modificare]
+Io: "yes"
+Bot: ✅ Issue #123 creata</code></pre>
+                </div>
+
+                <div class="bg-white bg-opacity-5 rounded-lg p-6 mb-6">
+                    <p class="font-semibold mb-2">2. Fare domande sul codice</p>
+                    <pre><code>Telegram: "dove viene gestito lo stato dell'utente?"
+Bot: "Lo stato utente è gestito in src/state/userState.dart usando Bloc.
+     Viene inizializzato in src/app.dart al lancio dell'app..."</code></pre>
+                </div>
+
+                <div class="bg-white bg-opacity-5 rounded-lg p-6 mb-6">
+                    <p class="font-semibold mb-2">3. Debug assistito</p>
+                    <pre><code>Telegram: "ho un errore nel parsing delle API, dove dovrei guardare?"
+Bot: "Controlla src/services/apiService.dart, linee 45-60.
+     Il parsing JSON potrebbe fallire se manca un campo..."</code></pre>
+                </div>
+
+                <h3>Metriche</h3>
+                <ul class="list-disc">
+                    <li><strong>Tempo per creare una issue:</strong> Da 5-10 minuti → 30 secondi</li>
+                    <li><strong>Chunk nel vector store:</strong> ~3788</li>
+                    <li><strong>Costo per query:</strong> zero (offre google)</li>
+                </ul>
+            </section>
+
+            <!-- Section 7: Next Steps -->
+            <section id="next-steps">
+                <h2>7. Next Steps</h2>
+                
+                <div class="highlight-box">
+                    <p class="font-semibold mb-2">Nuovi file:</p>
+                    <p>Se l'automazione è giù e arrivano dei nuovi commit se li perde, è opportuno fare un sistema che non guarda le modifiche dell'ultimo push ma guarda le differenze tra l'ultimo commit processato e l'ultimo arrivato.</p>
+                </div>
+                   <div class="highlight-box">
+                    <p class="font-semibold mb-2">Open source:</p>
+                    <p> Usare modelli open source quando possibile.</p>
+                </div>
+            </section>
+        </article>
+
+        <!-- Back to top button -->
+        <div class="text-center mt-12">
+            <a href="#" class="inline-flex items-center gap-2 text-orange hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                </svg>
+                Torna all'inizio
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-16 pt-8 border-t border-gray-700">
+            <div class="flex justify-between items-center">
+                <p class="text-gray-400">&copy; 2025 Alessio Gandelli</p>
+                <a href="../index.html" class="text-orange hover:underline">Back to Home</a>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

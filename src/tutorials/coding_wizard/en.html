@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automating Codebase Management with n8n and AI - Alessio Gandelli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @layer utilities {
+            .bg-deep-purple { background-color: rgb(44, 29, 95); }
+            .text-deep-purple { color: #2a0845; }
+            .text-orange { color: #f97316; }
+            .hover\:text-orange:hover { color: #f97316; }
+            .backdrop-blur { backdrop-filter: blur(8px); }
+        }
+        
+        /* Code block styling */
+        pre {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        /* Article content styling */
+        article h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f97316;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        article h3 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #f97316;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        article p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+        
+        article ul, article ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        article li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        
+        article a {
+            color: #f97316;
+            text-decoration: underline;
+        }
+        
+        article a:hover {
+            opacity: 0.8;
+        }
+        
+        .highlight-box {
+            background-color: rgba(249, 115, 22, 0.1);
+            border-left: 4px solid #f97316;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0.25rem;
+        }
+        
+        /* Image styling */
+        article img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            margin: 2rem auto;
+            display: block;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .image-caption {
+            text-align: center;
+            font-size: 0.875rem;
+            color: #9ca3af;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+        
+        /* Copy button styling */
+        .copy-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+            border: 2px solid #f97316;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background-color: rgba(249, 115, 22, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .copy-btn.copied {
+            background-color: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+    </style>
+</head>
+<body class="bg-deep-purple text-white font-sans">
+    <!-- Header with back button -->
+    <header class="sticky top-0 w-full bg-deep-purple/90 backdrop-blur shadow-lg z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../index.html" class="inline-flex items-center gap-2 hover:text-orange transition-colors duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to Home
+            </a>
+            <a href="./" class="inline-flex items-center gap-2 px-4 py-2 bg-orange bg-opacity-20 hover:bg-opacity-30 rounded-lg transition-all duration-200">
+                🇮🇹 Italiano
+            </a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-10 max-w-4xl">
+        <!-- Article Header -->
+        <header class="mb-12">
+            <h1 class="text-4xl font-extrabold text-orange mb-4">How I Automated My Codebase Management with n8n and AI</h1>
+            <p class="text-xl text-gray-300 mb-4">A complete automation that transforms your GitHub repository into an intelligent assistant for creating issues and answering questions about your code.</p>
+            
+            <!-- Copy JSON Button -->
+            <div class="mb-6">
+                <button id="copyJsonBtn" class="copy-btn">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    <span id="copyBtnText">Copy Full Automation JSON</span>
+                </button>
+            </div>
+            
+            <div class="flex flex-wrap gap-2 mb-6">
+                <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-sm font-medium">n8n</span>
+                <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-sm font-medium">MongoDB Atlas</span>
+                <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-sm font-medium">Vertex AI</span>
+                <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-sm font-medium">Telegram</span>
+                <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-sm font-medium">RAG</span>
+            </div>
+        </header>
+
+        <!-- Table of Contents -->
+        <nav class="bg-white bg-opacity-5 rounded-lg p-6 mb-12">
+            <h2 class="text-2xl font-bold text-orange mb-4">Table of Contents</h2>
+            <ol class="space-y-2">
+                <li><a href="#overview" class="hover:text-orange transition-colors">1. System Overview</a></li>
+                <li><a href="#indexing" class="hover:text-orange transition-colors">2.  Codebase Indexing</a></li>
+                <li><a href="#sync" class="hover:text-orange transition-colors">3.  Automatic Updates on Push</a></li>
+                <li><a href="#ai-agent" class="hover:text-orange transition-colors">4. AI Agent with Telegram</a></li>
+                <li><a href="#rag" class="hover:text-orange transition-colors">5. How RAG Works</a></li>
+                <li><a href="#results" class="hover:text-orange transition-colors">6. Practical Results</a></li>
+                <li><a href="#next-steps" class="hover:text-orange transition-colors">7. Next Steps</a></li>
+            </ol>
+        </nav>
+
+        <!-- Article Content -->
+        <article>
+            <!-- Section 1: Overview -->
+            <section id="overview">
+                <h2>1. System Overview</h2>
+                <p>This n8n automation consists of three main workflows:</p>
+                <ul class="list-disc">
+                    <li><strong>Initial indexing</strong>: Downloads the entire codebase and loads it into a vector store</li>
+                    <li><strong>Automatic sync</strong>: Every push to GitHub automatically updates modified files</li>
+                    <li><strong>AI Assistant</strong>: A Telegram bot that uses the codebase to create GitHub issues and answer questions</li>
+                </ul>
+                
+                <!-- Image placeholder for system architecture -->
+      
+                <img src="images/architecturen8n.png" alt="System Architecture Diagram" class="mx-auto my-8 rounded-lg shadow-lg"/>
+                
+                <div class="highlight-box">
+                    <p class="font-semibold mb-2">Tech Stack:</p>
+                    <ul class="list-disc ml-4">
+                        <li>n8n for orchestration</li>
+                        <li>MongoDB Atlas as vector store</li>
+                        <li>Google Vertex AI (Gemini 2.5 Pro) as LLM</li>
+                        <li>Telegram as user interface</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 2: Indexing -->
+            <section id="indexing">
+                <h2>2. Codebase Indexing</h2>
+                
+                <h3>The Basic Flow</h3>
+                <p>The first step is to download all <code>.dart</code> files from the GitHub repository and prepare them for embedding.</p>
+                
+                <p><strong>Main nodes:</strong></p>
+                <ol class="list-decimal">
+                    <li><code>HTTP Request</code> → Downloads the file tree from GitHub API</li>
+                    <li><code>get file list</code> → Transforms the tree into a file list</li>
+                    <li><code>Filter .dart Files</code> → Filters only Dart files</li>
+                    <li><code>Download Raw Content</code> → Downloads the raw content of each file</li>
+                </ol>
+
+                <p>You can get the complete file list using the GitHub API tree endpoint: replace "owner/your-repo" with your repository and "COMMIT_SHA" with the commit SHA you want to explore.</p>
+                
+                <pre><code>https://api.github.com/repos/OWNER/YOUR-REPO/git/trees/COMMIT_SHA?recursive=1</code></pre>
+
+                <p>By replacing <code>OWNER/YOUR-REPO</code> and the <code>SHA</code>, you get all the files present in that commit.</p>
+
+                <!-- Image placeholder for indexing workflow -->
+                <img src="images/ingest_codebase.png" alt="Indexing Workflow Diagram" class="mx-auto my-8 rounded-lg shadow-lg"/>
+
+                <h3>Intelligent Chunking</h3>
+                <p>Here's where it gets interesting. We can't just put entire files in the vector store - they're too large. We need to do "chunking", but intelligently.</p>
+                
+                <pre><code>// The code looks for semantic separators in Dart code
+const separators = [
+  /\nclass /,
+  /\nimport /,
+  /\nvoid /,
+  /\nFuture</,
+  /\nWidget /,
+  /\n@override/,
+  /\nenum /,
+  /\nextends /,
+  /\nabstract /,
+];</code></pre>
+
+                <p>Instead of randomly cutting the code every X characters, the <code>chunker</code> node tries to split on semantic boundaries - when a new class starts, an import, a function, etc. This keeps the context intact.</p>
+                
+                <p class="font-semibold">Maximum chunk length: 1200 characters</p>
+
+                <h3>Data Format</h3>
+                <p>Each chunk is structured like this:</p>
+                
+                <pre><code>{
+  file: "path/to/file.dart",
+  chunkIndex: 0,
+  content: "class MyWidget extends StatelessWidget..."
+}</code></pre>
+
+                <p>And then transformed :</p>
+                
+                <pre><code>{
+  pageContent: "class MyWidget...",
+  metadata: {
+    filename: "path/to/file.dart",
+    chunkIndex: 0
+  }
+}</code></pre>
+
+                <h3>Embeddings and Storage</h3>
+                <ul class="list-disc">
+                    <li>Embeddings are generated and saved in <strong>MongoDB Atlas</strong> with vector index</li>
+                    <li>Each chunk is semantically searchable</li>
+                </ul>
+            </section>
+
+            <img src="images/chunk_e_ingest.png" alt="MongoDB Vector Index" class="mx-auto my-8 rounded-lg shadow-lg"/>
+
+            <!-- Section 3: Sync -->
+            <section id="sync">
+                <h2>3. Automatic Updates on Push</h2>
+                
+                <h3>The Problem</h3>
+                <p>Indexing the entire codebase is fine the first time, but what happens when you commit? I don't want to re-index everything every time.</p>
+
+                <h3>The Solution: Incremental Updates</h3>
+                <p>The <code>Github Trigger</code> node listens to push events and the <code>get new files</code> node processes commits to understand what changed:</p>
+                
+                <pre><code>const filesToIngest = new Set();  // New or modified files
+const filesToDelete = new Set();  // Removed or modified files
+
+for (const commit of commits) {
+  commit.added.forEach(path => filesToIngest.add(path));
+  commit.modified.forEach(path => {
+    filesToIngest.add(path);   // Re-index new version
+    filesToDelete.add(path);   // Remove old version
+  });
+  commit.removed.forEach(path => filesToDelete.add(path));
+}</code></pre>
+
+                <!-- Image placeholder for sync workflow -->
+                <img src="images/new_files.png" alt="Sync Workflow Diagram" class="mx-auto my-8 rounded-lg shadow-lg"/>
+
+                <h3>Two Separate Branches</h3>
+                <p>The <code>Switch</code> node splits the flow:</p>
+                <ul class="list-disc">
+                    <li><strong>Branch "delete"</strong>: Removes old documents from MongoDB</li>
+                    <li><strong>Branch "ingest"</strong>: Downloads and indexes new files</li>
+                </ul>
+
+                <p><strong>Example delete operation:</strong></p>
+                <pre><code>{
+  "operation": "delete",
+  "collection": "codebase",
+  "query": "{ \"filename\": \"lib/screens/home.dart\" }"
+}</code></pre>
+
+                <h3>Logging to Google Sheets</h3>
+                <p>Every change is logged to a Google Sheet with:</p>
+                <ul class="list-disc">
+                    <li>File path</li>
+                    <li>Operation (delete/ingest)</li>
+                    <li>Timestamp</li>
+                    <li>Commit ID</li>
+                    <li>Author</li>
+                </ul>
+                <p>This allows for a complete history of changes to the vector store.</p>
+            </section>
+
+            <!-- Section 4: AI Agent -->
+            <section id="ai-agent">
+                <h2>4. AI Agent with Telegram</h2>
+                
+                <h3>The User Interface</h3>
+                <p>I chose Telegram as the interface because:</p>
+                <ul class="list-disc">
+                    <li>It's fast</li>
+                    <li>Supports voice messages</li>
+                    <li>Always available on my phone</li>
+                    <li>Has a good API</li>
+                </ul>
+
+                <h3>The Telegram Flow</h3>
+                <ol class="list-decimal">
+                    <li><code>Telegram Trigger</code> → Receives messages</li>
+                    <li><code>is admin</code> → Verifies it's me or an authorized user</li>
+                    <li><code>Switch1</code> → Distinguishes between text, photo, and audio</li>
+                    <li><code>Code in JavaScript1</code> → Extracts text from message</li>
+                    <li><code>AI Agent</code> → Processes the request</li>
+                </ol>
+
+                <!-- Image placeholder for Telegram interaction -->
+                <img src="images/telegram_agent.png" alt="Telegram Interaction Workflow" class="mx-auto my-8 rounded-lg shadow-lg"/>
+
+                <h3>Multimodal Support</h3>
+                <p><strong>Voice Messages:</strong></p>
+                <ul class="list-disc">
+                    <li>Downloaded via Telegram API</li>
+                    <li>Transcribed with Gemini using Vertex AI APIs</li>
+                    <li>Processed as normal text</li>
+                </ul>
+
+                <p><strong>Images:</strong></p>
+                <ul class="list-disc">
+                    <li>Analyzed with Gemini</li>
+                    <li>The idea is to analyze them for UI/bug screenshots</li>
+                </ul>
+
+                <h3>The AI Agent</h3>
+                <p>The heart of the system is the <code>AI Agent</code> node configured with:</p>
+                
+                <p><strong>LLM:</strong> Google Vertex AI - Gemini 2.5 Pro</p>
+                <p class="text-sm text-gray-400 ml-4">I use Google because I have free credits from Vertex</p>
+
+                <p><strong>Available tools:</strong></p>
+                <ol class="list-decimal">
+                    <li><code>MongoDB Atlas Vector Store</code> → Searches the codebase</li>
+                    <li><code>Create an issue in GitHub</code> → Creates issues automatically</li>
+                </ol>
+
+                <p><strong>Memory:</strong> Buffer window memory</p>
+                <ul class="list-disc">
+                    <li>Maintains conversational context</li>
+                    <li>One session per Telegram chat</li>
+                </ul>
+
+                <h3>The System Prompt</h3>
+                <p>The prompt is long and detailed, but the key points are:</p>
+                
+                <div class="highlight-box">
+                    <p class="font-semibold">Core Capabilities:</p>
+                    <ol class="list-decimal ml-4">
+                        <li>GitHub Issue Creation - Convert user messages into structured issues</li>
+                        <li>Coding Assistant - Provide development guidance using codebase knowledge</li>
+                        <li>File Recommendations - Suggest specific files to edit</li>
+                    </ol>
+                </div>
+
+                <h3>Reasoning Budget</h3>
+                <p>An interesting thing in the prompt is the "reasoning budget":</p>
+                
+                <pre><code>Maximum 2-3 reasoning steps per response
+NO loops or iterations - Decide → Draft → Done</code></pre>
+
+                <p>This forces the agent to be efficient and not waste tokens on useless reasoning.</p>
+            </section>
+
+            <!-- Section 5: RAG -->
+            <section id="rag">
+                <h2>5. How RAG Works</h2>
+                
+                <h3>Retrieval-Augmented Generation</h3>
+                <p>RAG = Retrieve relevant information before generating a response.</p>
+
+                <p><strong>The process:</strong></p>
+                <ol class="list-decimal">
+                    <li><strong>User query</strong> → "the button to select the exam in the timer isn't working?"</li>
+                    <li><strong>Query embedding</strong> → Converts the question into a numeric vector</li>
+                    <li><strong>Similarity search</strong> → Searches for the most similar chunks in the vector store</li>
+                </ol>
+
+                <pre><code>Query vector: [0.23, -0.45, 0.12, ...]
+
+Top results:
+- pages/timer/button.dart (similarity: 0.89)
+- pages/timer/exam_selector.dart (similarity: 0.82)
+- src/interceptors/authInterceptor.ts (similarity: 0.78)</code></pre>
+
+
+
+                <ol class="list-decimal" start="4">
+                    <li><strong>Context injection</strong> → Relevant chunks are passed to the LLM</li>
+                    <li><strong>Response generation</strong> → The LLM generates the response using the context</li>
+                </ol>
+
+                <h3>Why It Works</h3>
+                <ul class="list-disc">
+                    <li><strong>Semantic search</strong>: Doesn't search for keywords, but meaning</li>
+                    <li><strong>Precise context</strong>: Only the relevant parts of the code</li>
+                    <li><strong>Always up to date</strong>: The vector store syncs with every push</li>
+                </ul>
+            </section>
+
+            <!-- Section 6: Results -->
+            <section id="results">
+                <h2>6. Practical Results</h2>
+                
+                <h3>What I Can Do Now</h3>
+                
+                <div class="bg-white bg-opacity-5 rounded-lg p-6 mb-6">
+                    <p class="font-semibold mb-2">1. Create issues quickly</p>
+                    <pre><code>Telegram: "I want to add dark mode to the settings page, assign it to copilot"
+Bot: [Complete issue draft with files to modify]
+Me: "yes"
+Bot: ✅ Issue #123 created</code></pre>
+                </div>
+
+                <div class="bg-white bg-opacity-5 rounded-lg p-6 mb-6">
+                    <p class="font-semibold mb-2">2. Ask questions about the code</p>
+                    <pre><code>Telegram: "where is the user state managed?"
+Bot: "User state is managed in src/state/userState.dart using Bloc.
+     It's initialized in src/app.dart at app launch..."</code></pre>
+                </div>
+
+                <div class="bg-white bg-opacity-5 rounded-lg p-6 mb-6">
+                    <p class="font-semibold mb-2">3. Assisted debugging</p>
+                    <pre><code>Telegram: "I have an error in API parsing, where should I look?"
+Bot: "Check src/services/apiService.dart, lines 45-60.
+     JSON parsing might fail if a field is missing..."</code></pre>
+                </div>
+
+                <h3>Metrics</h3>
+                <ul class="list-disc">
+                    <li><strong>Time to create an issue:</strong> From 5-10 minutes → 30 seconds</li>
+                    <li><strong>Chunks in vector store:</strong> ~3788</li>
+                    <li><strong>Cost per query:</strong> zero (Google provides free credits)</li>
+                </ul>
+            </section>
+
+            <!-- Section 7: Next Steps -->
+            <section id="next-steps">
+                <h2>7. Next Steps</h2>
+                
+                <div class="highlight-box">
+                    <p class="font-semibold mb-2">New files:</p>
+                    <p>If the automation is down and new commits arrive, they get lost. It would be better to implement a system that doesn't just look at the last push's changes but compares the differences between the last processed commit and the latest one that arrived.</p>
+                </div>
+                   <div class="highlight-box">
+                    <p class="font-semibold mb-2">Open source:</p>
+                    <p> Use open source models when possible.</p>
+                </div>
+            </section>
+        </article>
+
+        <!-- Back to top button -->
+        <div class="text-center mt-12">
+            <a href="#" class="inline-flex items-center gap-2 text-orange hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                </svg>
+                Back to top
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-16 pt-8 border-t border-gray-700">
+            <div class="flex justify-between items-center">
+                <p class="text-gray-400">&copy; 2025 Alessio Gandelli</p>
+                <a href="../../index.html" class="text-orange hover:underline">Back to Home</a>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Copy JSON automation to clipboard
+        document.getElementById('copyJsonBtn').addEventListener('click', async function() {
+            const btn = this;
+            const btnText = document.getElementById('copyBtnText');
+            
+            try {
+                // Fetch the JSON file
+                const response = await fetch('full_automation.json');
+                const jsonData = await response.text();
+                
+                // Copy to clipboard
+                await navigator.clipboard.writeText(jsonData);
+                
+                // Update button state
+                btn.classList.add('copied');
+                btnText.textContent = '✓ Copied to Clipboard!';
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btnText.textContent = 'Copy Full Automation JSON';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                btnText.textContent = '✗ Failed to copy';
+                setTimeout(() => {
+                    btnText.textContent = 'Copy Full Automation JSON';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
