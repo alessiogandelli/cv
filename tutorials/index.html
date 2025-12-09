@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorials - Alessio Gandelli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Add custom colors for the theme */
+        @layer utilities {
+            .bg-deep-purple { background-color: #2a0845; }
+            .text-deep-purple { color: #2a0845; }
+            .text-orange { color: #f97316; }
+            .hover\:text-orange:hover { color: #f97316; }
+            .backdrop-blur { backdrop-filter: blur(8px); }
+        }
+    </style>
+</head>
+<body class="bg-deep-purple text-white font-sans min-h-screen">
+    <main class="container mx-auto px-6 pt-24 pb-10">
+        <!-- Tutorials Section -->
+        <section id="tutorials" class="mt-16">
+            <h2 class="text-3xl font-bold text-orange mb-4">Tutorials</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <a href="./coding_wizard/" class="p-4 bg-white bg-opacity-5 rounded-lg shadow-md transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
+                    <h3 class="text-xl font-semibold">Automating Codebase Management with n8n and AI</h3>
+                    <p>Learn how to automate complex codebase management tasks using n8n workflows and AI-powered automation for seamless development.</p>
+                </a>
+                <a href="./notifications/" class="p-4 bg-white bg-opacity-5 rounded-lg shadow-md transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
+                    <h3 class="text-xl font-semibold">Building Effective Notification Systems</h3>
+                    <p>Explore best practices and implementation strategies for building robust notification systems that users will love.</p>
+                </a>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
