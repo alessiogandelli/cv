@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="What Alessio Gandelli is doing now.">
+    <title>Now — Alessio Gandelli</title>
+    <link rel="icon" href="../favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: rgb(44, 29, 95); }
+        ::selection { background: #f97316; color: white; }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: rgb(44, 29, 95); }
+        ::-webkit-scrollbar-thumb { background: #f97316; border-radius: 5px; }
+        .text-orange { color: #f97316; }
+        .bg-orange { background-color: #f97316; }
+    </style>
+</head>
+<body class="text-white font-sans min-h-screen flex flex-col">
+
+    <nav class="w-full border-b border-white border-opacity-10">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="scramble text-lg font-bold tracking-wide hover:text-orange transition-colors duration-200" data-text="alessio gandelli">alessio gandelli</a>
+            <div class="flex gap-5 text-sm font-mono">
+                <a href="./" class="scramble text-orange" data-text="now">now</a>
+                <a href="../projects/" class="scramble hover:text-orange transition-colors duration-200" data-text="projects">projects</a>
+                <a href="../blog/" class="scramble hover:text-orange transition-colors duration-200" data-text="blog">blog</a>
+                <a href="../contact/" class="scramble hover:text-orange transition-colors duration-200" data-text="contact">contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 container mx-auto px-6 py-10 max-w-3xl">
+        <h1 class="text-4xl font-extrabold text-orange mb-2">⏱️ Now</h1>
+        <p class="text-gray-400 text-sm mb-10">Last updated: July 2026 — a <a href="https://nownownow.com/about" target="_blank" rel="noopener noreferrer" class="text-orange hover:underline">/now page</a>, because bios get stale.</p>
+
+        <!-- ✏️ EDIT HERE — update these blocks whenever life changes -->
+        <div class="space-y-6">
+            <div class="border-l-2 border-orange pl-5">
+                <h2 class="text-xl font-semibold mb-2">🛠️ Building</h2>
+                <p class="text-gray-300 text-sm leading-relaxed">AI agents and customized AI solutions as a freelance — for whoever needs them. Meanwhile, still growing <a href="https://studybuddy.it" class="text-orange hover:underline">StudyBuddy</a> with the team.</p>
+            </div>
+            <div class="border-l-2 border-orange pl-5">
+                <h2 class="text-xl font-semibold mb-2">🧠 Studying</h2>
+                <p class="text-gray-300 text-sm leading-relaxed">Going deep on how models really work — architectures, training, the internals. Not a prompt engineer. Also teaching AI to schools and companies, which is the best way to learn things properly.</p>
+            </div>
+            <div class="border-l-2 border-orange pl-5">
+                <h2 class="text-xl font-semibold mb-2">🎯 Chasing</h2>
+                <p class="text-gray-300 text-sm leading-relaxed">A better chess rating and a faster Rubik's cube solve. Both resist, both will fall.</p>
+            </div>
+            <div class="border-l-2 border-orange pl-5">
+                <h2 class="text-xl font-semibold mb-2">🏕️ Out there</h2>
+                <p class="text-gray-300 text-sm leading-relaxed">It's camping season: hiking, exploring comuni (ideally extracted at random with <a href="https://play.ranturismo.com" class="text-orange hover:underline">Ranturismo</a>), sleeping under stars.</p>
+            </div>
+            <div class="border-l-2 border-orange pl-5">
+                <h2 class="text-xl font-semibold mb-2">🦉 Keeping alive</h2>
+                <p class="text-gray-300 text-sm leading-relaxed mb-4">The Duolingo streak — learning French 🇫🇷 and chess ♟️, one lesson a day. The owl is watching.</p>
+                <a href="https://www.duolingo.com/profile/d8eea" target="_blank" rel="noopener noreferrer" class="inline-block bg-white rounded-lg p-3 transition-transform duration-200 hover:scale-105">
+                    <img src="https://duolingo-api-five.vercel.app/user/svg/d8eea" alt="My live Duolingo streak" class="w-44" loading="lazy">
+                </a>
+            </div>
+        </div>
+
+        <a href="../" class="inline-block mt-12 text-orange hover:underline">← back home</a>
+    </main>
+
+    <footer class="border-t border-white border-opacity-10">
+        <div class="container mx-auto px-6 py-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-sm text-gray-400">
+            <p>&copy; 2026 Alessio Gandelli</p>
+            <div class="flex gap-5">
+                <a href="https://github.com/alessiogandelli" target="_blank" rel="noopener noreferrer" class="hover:text-orange transition-colors">GitHub</a>
+                <a href="https://linkedin.com/in/alessiogandelli" target="_blank" rel="noopener noreferrer" class="hover:text-orange transition-colors">LinkedIn</a>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Navbar scramble hover
+        const GLYPHS = '!<>-_\\/[]{}=+*^?#';
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        document.querySelectorAll('.scramble').forEach(el => {
+            const original = el.dataset.text;
+            let frame;
+            el.addEventListener('mouseenter', () => {
+                if (reducedMotion) return;
+                cancelAnimationFrame(frame);
+                let t = 0;
+                const tick = () => {
+                    t++;
+                    el.textContent = original.split('').map((ch, i) => {
+                        if (ch === ' ') return ' ';
+                        if (t > i * 3 + 6) return ch;
+                        return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+                    }).join('');
+                    if (t < original.length * 3 + 8) frame = requestAnimationFrame(tick);
+                    else el.textContent = original;
+                };
+                tick();
+            });
+            el.addEventListener('mouseleave', () => { cancelAnimationFrame(frame); el.textContent = original; });
+        });
+    </script>
+</body>
+</html>

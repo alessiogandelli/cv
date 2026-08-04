@@ -3,264 +3,883 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Alessio Gandelli — co-founder of StudyBuddy, freelance AI engineer, AI trainer. Explore my interest graph.">
     <title>Alessio Gandelli</title>
+    <link rel="icon" href="favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Add custom colors for the theme */
-        @layer utilities {
-            .bg-deep-purple { background-color: rgb(44, 29, 95); }
-            .text-deep-purple { color: #2a0845; }
-            .text-orange { color: #f97316; }
-            .hover\:text-orange:hover { color: #f97316; }
-            .backdrop-blur { backdrop-filter: blur(8px); }
+        :root { --purple: rgb(44, 29, 95); --orange: #f97316; }
+        body  { background: var(--purple); }
+        ::selection { background: var(--orange); color: white; }
+        ::-webkit-scrollbar       { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--purple); }
+        ::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #fb923c; }
+        .text-orange { color: var(--orange); }
+        .bg-orange   { background-color: var(--orange); }
+
+        /* ── Graph container ───────────────────────────────────────── */
+        #graph-wrap {
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+            cursor: grab;
+        }
+        #graph-wrap.grabbing { cursor: grabbing; }
+        /* Subtle warm glow from centre */
+        #graph-wrap::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 47%,
+                rgba(249,115,22,0.05) 0%, transparent 65%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        #graph-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        #graph-nodes {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+        }
+
+        /* ── Node base ─────────────────────────────────────────────── */
+        .gnode {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            padding: 0;
+            background: none;
+            border: none;
+            outline: none;
+        }
+        .gnode-circle {
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.06);
+            border: 2px solid;
+            flex-shrink: 0;
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
+        }
+        .gnode:focus-visible .gnode-circle {
+            outline: 2px solid var(--orange);
+            outline-offset: 4px;
+        }
+        .gnode-label {
+            font-size: 10px;
+            color: #94a3b8;
+            max-width: 78px;
+            text-align: center;
+            line-height: 1.3;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            pointer-events: none;
+        }
+
+        /* ── Sizes & colours by type ───────────────────────────────── */
+        .gnode[data-type="root"]      .gnode-circle { width:62px;  height:62px;  font-size:28px; border-color:#f97316; border-width:3px; }
+        .gnode[data-type="hub"]       .gnode-circle { width:46px;  height:46px;  font-size:22px; border-color:rgba(249,115,22,0.75); }
+        .gnode[data-type="hub"]       .gnode-label  { font-weight:700; color:#e2e8f0; font-size:11px; }
+        .gnode[data-type="interest"]  .gnode-circle { width:34px;  height:34px;  font-size:16px; border-color:#7dd3fc; }
+        .gnode[data-type="app"]       .gnode-circle { width:34px;  height:34px;  font-size:16px; border-color:#86efac; }
+        .gnode[data-type="paper"]     .gnode-circle { width:34px;  height:34px;  font-size:16px; border-color:#c4b5fd; }
+        .gnode[data-type="hobby"]     .gnode-circle { width:34px;  height:34px;  font-size:16px; border-color:#f9a8d4; }
+        .gnode[data-type="hackathon"] .gnode-circle { width:34px;  height:34px;  font-size:16px; border-color:#fcd34d; }
+
+        /* ── Hover / active ────────────────────────────────────────── */
+        .gnode.active .gnode-circle { transform: scale(1.18); }
+        .gnode[data-type="root"].active      .gnode-circle { box-shadow: 0 0 24px rgba(249,115,22,0.65); }
+        .gnode[data-type="hub"].active       .gnode-circle { box-shadow: 0 0 18px rgba(249,115,22,0.50); }
+        .gnode[data-type="interest"].active  .gnode-circle { box-shadow: 0 0 16px rgba(125,211,252,0.60); }
+        .gnode[data-type="app"].active       .gnode-circle { box-shadow: 0 0 16px rgba(134,239,172,0.60); }
+        .gnode[data-type="paper"].active     .gnode-circle { box-shadow: 0 0 16px rgba(196,181,253,0.60); }
+        .gnode[data-type="hobby"].active     .gnode-circle { box-shadow: 0 0 16px rgba(249,168,212,0.60); }
+        .gnode[data-type="hackathon"].active .gnode-circle { box-shadow: 0 0 16px rgba(252,211,77,0.60); }
+
+        /* ── Dimmed (non-neighbour) ─────────────────────────────────── */
+        .gnode.dimmed { opacity: 0.15; transition: opacity 0.2s; }
+        .gnode.dimmed .gnode-circle { transform: none !important; }
+
+        /* ── Root breathing pulse ──────────────────────────────────── */
+        @keyframes rootBreath {
+            0%, 100% { box-shadow: 0 0  0px 0px rgba(249,115,22,0.00); }
+            50%       { box-shadow: 0 0 22px 4px rgba(249,115,22,0.25); }
+        }
+        .gnode[data-type="root"] .gnode-circle {
+            animation: rootBreath 3.5s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .gnode[data-type="root"] .gnode-circle { animation: none; }
+        }
+
+        /* ── In-graph focus mode ───────────────────────────────────── */
+        #node-focus {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+        #node-focus.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            display: grid !important;
+        }
+        #focus-backdrop {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at center, rgba(44,29,95,0.48), rgba(12,8,36,0.90)),
+                linear-gradient(135deg, rgba(249,115,22,0.08), transparent 45%);
+            backdrop-filter: blur(3px);
+            cursor: zoom-out;
+        }
+        .focus-card {
+            position: relative;
+            width: min(100%, 620px);
+            max-height: calc(100% - 24px);
+            overflow-y: auto;
+            padding: clamp(24px, 5vw, 40px);
+            border: 1px solid rgba(249,115,22,0.55);
+            border-radius: 24px;
+            background: linear-gradient(145deg, rgba(58,38,117,0.97), rgba(28,19,65,0.98));
+            box-shadow: 0 28px 80px rgba(8,4,28,0.62), 0 0 45px rgba(249,115,22,0.10);
+            transform: translateY(0) scale(1);
+            transition: transform 0.25s ease;
+        }
+        .focus-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(120deg, rgba(255,255,255,0.07), transparent 32%);
+            pointer-events: none;
+        }
+        #node-focus.hidden .focus-card { transform: translateY(12px) scale(0.97); }
+        #focus-icon {
+            display: grid;
+            place-items: center;
+            width: 56px;
+            height: 56px;
+            border: 1px solid rgba(249,115,22,0.55);
+            border-radius: 50%;
+            background: rgba(249,115,22,0.10);
+            font-size: 26px;
+            box-shadow: 0 0 24px rgba(249,115,22,0.16);
+        }
+        #focus-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 14px;
+            border: 1px solid rgba(249,115,22,0.35);
+            border-radius: 999px;
+            color: #fdba74;
+            background: rgba(249,115,22,0.08);
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+        #focus-links a:hover,
+        #focus-links a:focus-visible {
+            background: rgba(249,115,22,0.18);
+            border-color: rgba(249,115,22,0.75);
+            transform: translateY(-1px);
+            outline: none;
+        }
+        @media (max-width: 640px) {
+            #node-focus { padding: 14px; }
+            .focus-card { max-height: calc(100% - 12px); border-radius: 18px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #node-focus, .focus-card, #focus-links a { transition: none; }
         }
     </style>
 </head>
-<body class="bg-deep-purple text-white font-sans min-h-screen">
-    <!-- <header class="fixed w-full bg-deep-purple/90 backdrop-blur shadow-lg z-50">
+<body class="text-white font-sans min-h-screen flex flex-col">
+
+    <!-- Nav -->
+    <nav class="w-full border-b border-white border-opacity-10">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-3xl font-bold">My Website</h1>
-            <nav>
-                <ul class="flex space-x-4">
-                    <li><a href="#about" class="hover:text-orange transition-colors duration-200 py-2">About</a></li>
-                    <li><a href="#projects" class="hover:text-orange transition-colors duration-200 py-2">Projects</a></li>
-                    <li><a href="#contact" class="hover:text-orange transition-colors duration-200 py-2">Contact</a></li>
-                    <li><a href="#resume" class="hover:text-orange transition-colors duration-200 py-2">Resume</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header> -->
-
-    <main class="container mx-auto px-6 pt-24 pb-10">
-        <!-- Hero Section -->
-        <section id="hero" class="text-center min-h-[80vh] flex flex-col justify-center items-center">
-            <h2 class="text-4xl font-extrabold text-orange mb-4">Alessio Gandelli</h2>
-            <p class="text-lg mb-8">Co-founder of <a href="https://studybuddy.it" class="text-orange hover:underline transition-colors duration-200">StudyBuddy</a> and social data scientist.</p>
-            <div class="flex gap-6 items-center">
-                <a href="https://github.com/alessiogandelli" 
-                   class="flex items-center gap-2 hover:text-orange transition-colors duration-200" 
-                   target="_blank" 
-                   rel="noopener noreferrer">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                    </svg>
-                    GitHub
-                </a>
-                <a href="https://linkedin.com/in/alessiogandelli" 
-                   class="flex items-center gap-2 hover:text-orange transition-colors duration-200" 
-                   target="_blank" 
-                   rel="noopener noreferrer">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                    </svg>
-                    LinkedIn
-                </a>
+            <a href="./" class="scramble text-lg font-bold tracking-wide hover:text-orange transition-colors duration-200" data-text="alessio gandelli">alessio gandelli</a>
+            <div class="flex gap-5 text-sm font-mono">
+                <a href="now/"     class="scramble hover:text-orange transition-colors duration-200" data-text="now">now</a>
+                <a href="projects/" class="scramble hover:text-orange transition-colors duration-200" data-text="projects">projects</a>
+                <a href="blog/"    class="scramble hover:text-orange transition-colors duration-200" data-text="blog">blog</a>
+                <a href="contact/" class="scramble hover:text-orange transition-colors duration-200" data-text="contact">contact</a>
             </div>
-        </section>
+        </div>
+    </nav>
 
-        <!-- About Section -->
-        <section id="about" class="mt-16">
-            <h2 class="text-3xl font-bold text-orange mb-4">About Me</h2>
-            <p class="text-base leading-relaxed">
-                I like building things, could be wood, but now is software and a startup. 
-            </br>
-               <!-- I love solving problems and learning new technologies. -->
+    <main class="flex-1 container mx-auto px-6 py-10">
+
+        <!-- Intro -->
+        <header class="text-center max-w-2xl mx-auto mb-6">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-orange mb-4">Alessio Gandelli</h1>
+            <p class="text-lg text-gray-300 leading-relaxed">
+                Co-founder of <a href="https://studybuddy.it" class="text-orange hover:underline">StudyBuddy</a>,
+                researcher, AI engineer<br>
+                This is my brain as a graph — <span class="text-orange font-semibold">drag it, poke it, click it.</span>
+            </p>
+        </header>
+
+        <!-- Interest Graph -->
+        <section id="graph" class="max-w-6xl mx-auto" aria-label="Interest graph">
+            <div id="graph-wrap" class="bg-white bg-opacity-5 rounded-2xl">
+                <svg  id="graph-svg"   aria-hidden="true"></svg>
+                <div id="graph-nodes" role="group" aria-label="Graph nodes"></div>
+                <div id="node-focus" class="hidden" aria-hidden="true">
+                    <div id="focus-backdrop" aria-hidden="true"></div>
+                    <article class="focus-card" role="dialog" aria-modal="true" aria-labelledby="focus-title" aria-describedby="focus-desc">
+                        <div class="flex items-start justify-between gap-5">
+                            <div id="focus-icon" aria-hidden="true"></div>
+                            <button id="focus-close" class="relative text-gray-400 hover:text-orange text-3xl leading-none transition-colors" aria-label="Close details">×</button>
+                        </div>
+                        <p id="focus-meta" class="relative mt-6 text-xs font-mono uppercase tracking-widest text-orange"></p>
+                        <h3 id="focus-title" class="relative mt-2 text-2xl md:text-3xl font-bold text-white"></h3>
+                        <p id="focus-desc" class="relative mt-4 text-sm md:text-base text-gray-300 leading-relaxed"></p>
+                        <div id="focus-links" class="relative mt-6 flex flex-wrap gap-3"></div>
+                    </article>
+                </div>
+            </div>
+            <p class="text-center text-sm text-gray-500 mt-3 select-none">
+                drag · click to explore ·
+                <kbd class="px-1 py-0.5 rounded bg-white bg-opacity-10 text-xs font-mono">Tab</kbd> to navigate
             </p>
         </section>
 
-        <!-- Tutorials Section -->
-        <section id="tutorials" class="mt-16">
-            <h2 class="text-3xl font-bold text-orange mb-4">Tutorials & Writings</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <a href="tutorials/coding_wizard/" class="p-4 bg-white bg-opacity-5 rounded-lg shadow-md transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
-                    <h3 class="text-xl font-semibold">Automating Codebase Management with n8n and AI</h3>
-                    <p class="text-sm text-gray-400 mb-2">n8n • MongoDB • Vertex AI • Telegram</p>
-                    <p class="mb-3">A complete automation that transforms your GitHub repository into an intelligent assistant for creating issues and answering questions about your code.</p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Automation</span>
-                        <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">RAG</span>
-                        <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">AI Agent</span>
-                    </div>
-                </a>
-            </div>
-        </section>
-
-        <!-- Projects Section -->
-        <section id="projects" class="mt-16">
-            <h2 class="text-3xl font-bold text-orange mb-4">Projects</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <a href="https://studybuddy.it" class="p-4 bg-white bg-opacity-5 rounded-lg shadow-md transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
-                <h3 class="text-xl font-semibold">StudyBuddy</h3>
-                <p>A platform for university students, i am developing the mobile app in Flutter and soon it will be accessible on the app store, if you want to test it, contact me</p>
+        <!-- Quick links -->
+        <section class="max-w-5xl mx-auto mt-24 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <a href="now/"      class="p-6 bg-white bg-opacity-5 rounded-xl transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl font-semibold mb-2">⏱️ Now</h3>
+                <p class="text-sm text-gray-300">What I'm doing, learning and chasing right now.</p>
             </a>
-            <a href="https://github.com/alessiogandelli/tweets-to-topic-network" class="p-4 bg-white bg-opacity-5 rounded-lg shadow-md transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
-                <h3 class="text-xl font-semibold">Network of Topics</h3>
-                <p>Created a Python library that performs topic modeling on tweets and builds a multi-layer network with each layer corresponding to a distinct topic</p>
+            <a href="projects/" class="p-6 bg-white bg-opacity-5 rounded-xl transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl font-semibold mb-2">🛠️ Projects</h3>
+                <p class="text-sm text-gray-300">Things I've built — from startups to random comuni extractors.</p>
             </a>
-            </div>
-        </section>
-
-        <!-- Papers Section -->
-        <section id="papers" class="mt-16">
-            <h2 class="text-3xl font-bold text-orange mb-4">Papers</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <a href="https://arxiv.org/abs/2509.21092" class="p-4 bg-white bg-opacity-5 rounded-lg shadow-md transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
-                <h3 class="text-xl font-semibold">Online Social Influence</h3>
-                <p class="text-sm text-gray-400 mb-2">Diletta Goglia, Davide Vega, Alessio Gandelli</p>
-                <p class="mb-3">When people see what most others think online, they actually do the opposite on purpose - but still keep the same good or bad feeling about it.</p>
-                <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Social Conformity</span>
-                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Reddit</span>
-                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">NLP</span>
-                </div>
+            <a href="blog/"     class="p-6 bg-white bg-opacity-5 rounded-xl transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl font-semibold mb-2">✍️ Blog</h3>
+                <p class="text-sm text-gray-300">Tutorials and whatever I feel like writing.</p>
             </a>
-            <a href="https://github.com/alessiogandelli/master-thesis/blob/main/AlessioGandelliThesisFinal.pdf" class="p-4 bg-white bg-opacity-5 rounded-lg shadow-md transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
-                <h3 class="text-xl font-semibold">Climate Twitter Polarization</h3>
-                <p class="text-sm text-gray-400 mb-2">Alessio Gandelli</p>
-                <p class="mb-3">Looked at Twitter fights about climate change during a big meeting. Found that people arguing about Canada's coal and private jets were the most divided.</p>
-                <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Network Analysis</span>
-                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Polarization</span>
-                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Climate Change</span>
-                </div>
-            </a>
-            </div>
         </section>
+    </main>
 
-        <!-- Resume Section -->
-        <section id="resume" class="mt-16">
-            <h2 class="text-3xl font-bold text-orange mb-8">Resume</h2>
-            
-            <!-- Contact Info Card -->
-            <div class="bg-white bg-opacity-5 rounded-lg p-6 mb-8">
-            <h3 class="text-2xl font-bold mb-4">Alessio Gandelli</h3>
-            <div class="flex flex-wrap gap-4">
-                <!-- <a href="mailto:me@gandelli.dev" class="flex items-center gap-2 text-orange hover:underline">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                    me@gandelli.dev
-                </a> -->
+    <footer class="border-t border-white border-opacity-10 mt-10">
+        <div class="container mx-auto px-6 py-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-sm text-gray-400">
+            <p>&copy; 2026 Alessio Gandelli — drawn with 🧡 and no template</p>
+            <div class="flex gap-5">
+                <a href="https://github.com/alessiogandelli"      target="_blank" rel="noopener noreferrer" class="hover:text-orange transition-colors">GitHub</a>
+                <a href="https://linkedin.com/in/alessiogandelli"  target="_blank" rel="noopener noreferrer" class="hover:text-orange transition-colors">LinkedIn</a>
             </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-            <!-- Work Experience Card -->
-            <div class="bg-white bg-opacity-5 rounded-lg p-6 hover:bg-opacity-10 transition-all duration-300">
-                <h3 class="text-xl font-bold text-orange mb-6">Work Experience</h3>
-                <div class="space-y-6">
-                    <div class="border-l-2 border-orange pl-4 hover:border-opacity-80 transition-all">
-                        <h4 class="font-semibold text-lg">Visiting researcher at Uppsala University</h4>
-                        <p class="text-sm text-gray-300 mt-1">Apr 2024 - Jun 2024</p>
-                        <p class="mt-3 text-sm leading-relaxed">Conducted research on social media dynamics, particularly polarization and disagreement using NLP techniques.</p>
-                    </div>
-                    <div class="border-l-2 border-orange pl-4 hover:border-opacity-80 transition-all">
-                        <h4 class="font-semibold text-lg">Data Science intern at Uppsala University</h4>
-                        <p class="text-sm text-gray-300 mt-1">Mar 2023 - Jun 2023</p>
-                        <p class="mt-3 text-sm leading-relaxed">Master thesis analyzing polarization in climate change tweets during COP.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Education Card -->
-            <div class="bg-white bg-opacity-5 rounded-lg p-6 hover:bg-opacity-10 transition-all duration-300">
-                <h3 class="text-xl font-bold text-orange mb-6">Education</h3>
-                <div class="space-y-6">
-                    <div class="border-l-2 border-orange pl-4 hover:border-opacity-80 transition-all">
-                        <h4 class="font-semibold text-lg">Data Science MSc</h4>
-                        <p class="text-sm text-gray-300 mt-1">University of Trento | 2021 - 2023</p>
-                        <p class="mt-2 text-sm text-gray-400">Focus on machine learning and data analysis</p>
-                    </div>
-                    <div class="border-l-2 border-orange pl-4 hover:border-opacity-80 transition-all">
-                        <h4 class="font-semibold text-lg">Computer Science BSc</h4>
-                        <p class="text-sm text-gray-300 mt-1">University of Trento | 2018 - 2021</p>
-                        <p class="mt-2 text-sm text-gray-400">Core computer science fundamentals</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Projects Card -->
-            <div class="bg-white bg-opacity-5 rounded-lg p-6">
-                <h3 class="text-xl font-bold text-orange mb-4">Projects</h3>
-                <div class="space-y-4">
-                <div class="border-l-2 border-orange pl-4">
-                    <h4 class="font-semibold">🕸️ Tweets-to-topic-network</h4>
-                    <p class="mt-2 text-sm">Python library for social scientists to efficiently label tweets using BERTopic.</p>
-                    <a href="https://pypi.org/project/tweets-to-topic-network/" class="text-orange hover:underline text-sm">View on PyPI →</a>
-                </div>
-                <div class="border-l-2 border-orange pl-4">
-                    <h4 class="font-semibold">🤖 StudyBuddy-tutor</h4>
-                    <p class="mt-2 text-sm">Telegram bot with advanced generative AI capabilities for students.</p>
-                    <a href="https://github.com/studybuddydev/studybuddy-tutor" class="text-orange hover:underline text-sm">View on GitHub →</a>
-                </div>
-                </div>
-            </div>
-
-            <!-- Skills Card -->
-            <div class="bg-white bg-opacity-5 rounded-lg p-6">
-                <h3 class="text-xl font-bold text-orange mb-4">Skills</h3>
-                <div class="space-y-4">
-                <div class="border-l-2 border-orange pl-4">
-                    <h4 class="font-semibold">Technical Skills</h4>
-                    <p class="mt-2 text-sm">Python, R, TypeScript, social network analysis, NLP, Flutter</p>
-                </div>
-                <div class="border-l-2 border-orange pl-4">
-                    <h4 class="font-semibold">Soft Skills</h4>
-                    <p class="mt-2 text-sm">Adaptability, team work, etc </p>
-                </div>
-                </div>
-            </div>
-            </div>
-        </section>
-
-
-
-        <footer class="container mx-auto px-6 py-6 mt-16 border-t border-gray-700">
-            <div class="flex justify-between items-center">
-            <p>&copy; 2025 Alessio Gandelli. All rights reserved.</p>
-            <div class="flex gap-4">
-                <a href="https://github.com/alessiogandelli" 
-                   class="hover:text-orange transition-colors duration-200" 
-                   target="_blank" 
-                   rel="noopener noreferrer">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"></svg>
-                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                </svg>
-                </a>
-                <a href="https://linkedin.com/in/alessiogandelli" 
-                   class="hover:text-orange transition-colors duration-200" 
-                   target="_blank" 
-                   rel="noopener noreferrer">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"></svg>
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                </svg>
-                </a>
-            </div>
-            </div>
-        </footer>
+        </div>
+    </footer>
 
     <script>
-        // Highlight active navigation link based on scroll position
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('nav a');
+    /* ================================================================
+       ✏️  EDIT HERE — all graph content lives in NODES and CROSS_LINKS.
 
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (scrollY >= sectionTop - 100) {
-                    current = section.getAttribute('id');
-                }
-            });
+       Every item (interest, app, paper, hackathon, hobby…) is one
+       object in the NODES array with these fields:
 
-            navLinks.forEach(link => {
-                link.classList.remove('text-orange');
-                if (link.getAttribute('href').slice(1) === current) {
-                    link.classList.add('text-orange');
-                }
-            });
+         id       (required)  unique string key — referenced in CROSS_LINKS
+         label    (required)  text shown below the circle
+         icon     (required)  emoji inside the circle
+         type     (required)  one of:
+                              'root'       — the central node (only one)
+                              'hub'        — category heading
+                              'interest'   — research topic
+                              'app'        — project / tool
+                              'paper'      — publication
+                              'hackathon'  — hackathon participation
+                              'hobby'      — free-time activity
+         parent   (required)  id of the parent node (omit for 'root' only)
+         desc                 text shown in focus mode on click
+         meta                 short event, date, or status line
+         links                optional array of { label, url } actions
+
+       To add a hackathon:
+         { id:'hack_eth', label:'ETHGlobal', icon:'🏆',
+           type:'hackathon', parent:'hackathons', meta:'Event · 2026',
+           links:[{ label:'Repository', url:'https://github.com/…' }],
+           desc:'...' },
+
+       To add an interest, app, paper, or hobby:
+         same pattern — just change type and parent.
+    ================================================================ */
+
+    const NODES = [
+
+        // ── Root ──────────────────────────────────────────────────────
+        { id: 'me', label: 'Alessio', icon: '⚡', type: 'root',
+          desc: 'Co-founder of StudyBuddy, freelance AI engineer, AI trainer.' },
+
+        // ── Category hubs ─────────────────────────────────────────────
+        { id: 'research',   label: 'Research',   icon: '🔬', type: 'hub', parent: 'me',
+          desc: 'Questions I study through language, networks, and digital behavior.' },
+        { id: 'apps',       label: 'Projects',   icon: '🛠️', type: 'hub', parent: 'me',
+          desc: 'Products, experiments, and data projects I have built.' },
+        { id: 'agents',     label: 'AI Agents',  icon: '🤖', type: 'hub', parent: 'me',
+          desc: 'Systems that reason, use tools, and act. Connected here to the agent projects I have built.' },
+        { id: 'hackathons', label: 'Hackathons', icon: '🏆', type: 'hub', parent: 'me',
+          desc: 'Fast teams, hard deadlines, and prototypes that have to work by demo time.' },
+        { id: 'freetime',   label: 'Free Time',  icon: '🌿', type: 'hub', parent: 'me',
+          desc: 'What I do when the laptop is closed — or at least should be.' },
+        { id: 'papers',     label: 'Papers',     icon: '📄', type: 'hub', parent: 'research',
+          desc: 'Published research and academic work.' },
+
+        // ── Research interests ─────────────────────────────────────────
+        { id: 'llm',    label: 'Large Language Models',        icon: '🧠', type: 'interest', parent: 'research',
+          desc: 'The engines behind everything I build — I study how they work, not how to prompt them.' },
+        { id: 'nlp',    label: 'NLP',                          icon: '💬', type: 'interest', parent: 'research',
+          desc: 'Teaching machines to read — my gateway drug into AI research.' },
+        { id: 'css',    label: 'Computational Social Science', icon: '🧑‍🤝‍🧑', type: 'interest', parent: 'research',
+          desc: 'Using data to understand how humans behave together.' },
+        { id: 'hai',    label: 'Human-AI Interaction',         icon: '🤝', type: 'interest', parent: 'research',
+          desc: 'Making AI that fits humans, not the other way around.' },
+        { id: 'dba',    label: 'Digital Behavior Analysis',    icon: '📊', type: 'interest', parent: 'research',
+          desc: 'What our clicks, posts and rants say about us.' },
+        { id: 'sna',    label: 'Social Network Analysis',      icon: '🕸️', type: 'interest', parent: 'research',
+          desc: 'How information, polarization and influence spread online — my research field at Uppsala.' },
+
+        // ── Apps ──────────────────────────────────────────────────────
+        { id: 'studybuddy', label: 'StudyBuddy',           icon: '📚', type: 'app', parent: 'apps',
+          links: [{ label: 'Visit StudyBuddy', url: 'https://studybuddy.it' }],
+          desc: 'The startup I co-founded: a platform that helps university students study better.' },
+        { id: 'ranturismo', label: 'Ranturismo',           icon: '🏔️', type: 'app', parent: 'apps',
+          links: [{ label: 'Open the app', url: 'https://play.ranturismo.com' }],
+          desc: 'Discover all 205 comuni of Brescia — extract a random one and go explore it.' },
+        { id: 'ttn',        label: 'tweets-to-topic-net',  icon: '🕸️', type: 'app', parent: 'apps',
+          links: [{ label: 'PyPI package', url: 'https://pypi.org/project/tweets-to-topic-network/' }],
+          desc: 'Python library for topic modeling on tweets and multi-layer network analysis.' },
+        { id: 'attention', label: 'Attention Analysis', icon: '📱', type: 'app', parent: 'apps',
+          meta: 'Social Dynamics Lab · 2022',
+          links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/attention-analysis' }],
+          desc: 'An analysis of phone-use data collected within a larger Social Dynamics Lab study, built to understand how students divide and direct their attention.' },
+        { id: 'musknet', label: 'Musk Twitter Network', icon: '🐦', type: 'app', parent: 'apps',
+          meta: 'Network and NLP analysis · 2022',
+          links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/tweet-musk-network' }],
+          desc: 'A network and NLP analysis of Elon Musk’s tweets around the period in which he acquired Twitter.' },
+        { id: 'featnet', label: 'Spotify Collaboration Network', icon: '🎧', type: 'app', parent: 'apps',
+          meta: 'Network analysis · 2022',
+          links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/feat-network' }],
+          desc: 'A network built from Spotify data to explore how artists connect through featured collaborations.' },
+        { id: 'uppsala', label: 'Finding Home in Uppsala', icon: '🗺️', type: 'app', parent: 'apps',
+          meta: 'Geospatial analysis · 2022',
+          links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/geospatial-uppsala-housing' }],
+          desc: 'A geospatial search for the best place to live in Uppsala, combining OpenStreetMap data with public transport, elevation, workplace distance, and nearby amenities.' },
+
+        // ── Papers ────────────────────────────────────────────────────
+        { id: 'osi',    label: 'Online Social Influence',     icon: '📄', type: 'paper', parent: 'papers',
+          meta: 'EPJ Data Science · 2026',
+          links: [{ label: 'Read the paper', url: 'https://link.springer.com/article/10.1140/epjds/s13688-026-00668-9' }],
+          desc: 'When people see what most others think online, they do the opposite — but keep the same feeling about it.' },
+        { id: 'thesis', label: 'Climate Polarization Thesis', icon: '🎓', type: 'paper', parent: 'papers',
+          meta: 'Master’s thesis',
+          links: [{ label: 'Read the thesis', url: 'https://github.com/alessiogandelli/master-thesis/blob/main/AlessioGandelliThesisFinal.pdf' }],
+          desc: 'Analyzing climate change tweet polarization during COP with network analysis and NLP.' },
+
+        // ── Hackathons ────────────────────────────────────────────────
+        { id: 'materialbuddy', label: 'MaterialBuddy', icon: '🧪', type: 'hackathon', parent: 'hackathons',
+          meta: 'START Hack 2026 · 19–20 March · St. Gallen',
+          desc: 'A natural-language AI agent for ZwickRoell testing laboratories. It queries material-test data, runs statistical analyses, produces charts, and preserves an audit trail of every reasoning step. The code is private under NDA.' },
+        { id: 'innovatesg', label: 'InnoVateSG', icon: '💡', type: 'hackathon', parent: 'hackathons',
+          meta: 'START Hack 2025 · St. Gallen',
+          links: [
+              { label: 'Agent repository', url: 'https://github.com/alessiogandelli/starthack25-innovateSG-agent' },
+              { label: 'App repository', url: 'https://github.com/alessiogandelli/starthack25-innovateSG-app' }
+          ],
+          desc: 'An AI innovation coach that helps local business owners turn ideas into practical innovation through a conversational agent and companion Flutter app.' },
+        { id: 'moneybuddy', label: 'MoneyBuddy', icon: '💸', type: 'hackathon', parent: 'hackathons',
+          meta: 'START Hack Tour · September 2025',
+          links: [
+              { label: 'App repository', url: 'https://github.com/alessiogandelli/moneybuddy-app' },
+              { label: 'Backend repository', url: 'https://github.com/alessiogandelli/moneybuddy-backend' }
+          ],
+          desc: 'An AI-powered personal finance app for tracking expenses, understanding spending patterns, and working toward financial goals with the MoneyCA assistant.' },
+        { id: 'esgbuddy', label: 'ESGBuddy', icon: '🌱', type: 'hackathon', parent: 'hackathons',
+          meta: 'NOI Hackathon · 2025 · Bolzano',
+          links: [
+              { label: 'Repository', url: 'https://github.com/alessiogandelli/ESGBuddy' },
+              { label: 'Live demo', url: 'https://esg.studybuddy.it/' }
+          ],
+          desc: 'The StudyBuddy team’s project for the InfoMinds challenge at NOI Hackathon 2025, focused on making ESG knowledge easier to explore.' },
+        { id: 'trashbuddy', label: 'TrashBuddy', icon: '♻️', type: 'hackathon', parent: 'hackathons',
+          meta: 'NOI Hackathon · 2024 · Bolzano',
+          links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/trash-buddy' }],
+          desc: 'A prototype built for the Konverto challenge at NOI Hackathon 2024.' },
+        { id: 'mooovex', label: 'MoooveX Voice', icon: '🚕', type: 'hackathon', parent: 'hackathons',
+          meta: 'NOI Hackathon · 2023 · Bolzano',
+          links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/noi-hackaton-mooovex' }],
+          desc: 'A Telegram voice interface that lets taxi drivers create rides by extracting origin, destination, date, time, and passenger count from a voice message.' },
+        { id: 'shopstem', label: 'Shopstem', icon: '🏪', type: 'hackathon', parent: 'hackathons',
+          meta: 'NOI Hackathon · 2022 · Bolzano',
+          links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/shopstem-hackaton' }],
+          desc: 'A retail analytics concept for small and medium businesses, using Bluetooth and cameras to understand in-store movement and reveal customer segments.' },
+        { id: 'hackapizza', label: 'Galactic Restaurant Agent', icon: '🍕', type: 'hackathon', parent: 'hackathons',
+          meta: 'Hackapizza 2.0 · 2026',
+          links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/hackapizzaiug-restaurant' }],
+          desc: 'An autonomous AI agent that follows a live game over Server-Sent Events, tracks a galactic restaurant’s state, and makes strategic decisions across each phase.' },
+
+        // ── Free time ─────────────────────────────────────────────────
+        { id: 'chess',  label: 'Chess',           icon: '♟️', type: 'hobby', parent: 'freetime',
+          desc: 'Not good at it, but I like it' },
+        { id: 'nature', label: 'Nature & Hiking', icon: '🥾', type: 'hobby', parent: 'freetime',
+          desc: 'Hiking, camping, sleeping under stars — ideally off the beaten path.' },
+        { id: 'rubik',  label: "Rubik's Cube",    icon: '🧩', type: 'hobby', parent: 'freetime',
+          desc: 'Getting faster. The cube will fall.' },
+    ];
+
+    /* Extra connections beyond the parent hierarchy.
+       Format: ['nodeId', 'nodeId'] — order does not matter.
+       These make the graph feel like a network, not just a tree. */
+    const CROSS_LINKS = [
+        ['llm',    'nlp'],
+        ['llm',    'sbtutor'],
+        ['agents', 'sbtutor'],
+        ['agents', 'materialbuddy'],
+        ['agents', 'innovatesg'],
+        ['agents', 'moneybuddy'],
+        ['agents', 'hackapizza'],
+        ['nlp',    'css'],
+        ['nlp',    'ttn'],
+        ['nlp',    'musknet'],
+        ['css',    'sna'],
+        ['css',    'dba'],
+        ['css',    'attention'],
+        ['css',    'musknet'],
+        ['sna',    'dba'],
+        ['sna',    'ttn'],
+        ['sna',    'musknet'],
+        ['sna',    'featnet'],
+        ['sna',    'osi'],
+        ['dba',    'osi'],
+        ['dba',    'attention'],
+        ['css',    'thesis'],
+        ['ttn',    'thesis'],
+        ['hai',    'studybuddy'],
+    ];
+
+    /* ================================================================
+       🛑  Engine — you shouldn't need to touch anything below.
+    ================================================================ */
+
+    // ── Dev-time validation ───────────────────────────────────────────
+    {
+        const allIds = new Set(NODES.map(n => n.id));
+        const seen   = new Set();
+        NODES.forEach(n => {
+            if (seen.has(n.id))
+                console.warn(`[graph] duplicate id: "${n.id}"`);
+            seen.add(n.id);
+            if (n.parent && !allIds.has(n.parent))
+                console.warn(`[graph] "${n.id}" has unknown parent "${n.parent}"`);
         });
+        CROSS_LINKS.forEach(([a, b]) => {
+            if (!allIds.has(a)) console.warn(`[graph] cross-link: unknown id "${a}"`);
+            if (!allIds.has(b)) console.warn(`[graph] cross-link: unknown id "${b}"`);
+        });
+    }
+
+    // ── Constants ─────────────────────────────────────────────────────
+    const RADIUS = { root: 31, hub: 23, interest: 17, app: 17, paper: 17, hobby: 17, hackathon: 17 };
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ── Mutable state ─────────────────────────────────────────────────
+    let dragged = null, hovered = null, selected = null, lastTrigger = null;
+    let W = 0, H = 0;
+
+    // ── DOM refs ──────────────────────────────────────────────────────
+    const wrap     = document.getElementById('graph-wrap');
+    const svgEl    = document.getElementById('graph-svg');
+    const nodesDiv = document.getElementById('graph-nodes');
+    const NS       = 'http://www.w3.org/2000/svg';
+
+    function setSize() {
+        W = wrap.clientWidth;
+        H = W < 640
+            ? Math.max(760, Math.min(900, window.innerHeight * 0.88))
+            : Math.max(620, Math.min(780, window.innerHeight * 0.74));
+        wrap.style.height = H + 'px';
+        svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
+        svgEl.setAttribute('width',   W);
+        svgEl.setAttribute('height',  H);
+    }
+    setSize();
+
+    // ── Build physics nodes ───────────────────────────────────────────
+    const byId   = {};
+    const physics = NODES.map(cfg => {
+        const n = {
+            ...cfg,
+            x: W / 2, y: H / 2,
+            vx: 0, vy: 0,
+            phase: Math.random() * Math.PI * 2,
+            el: null,
+        };
+        byId[cfg.id] = n;
+        return n;
+    });
+
+    // Spread top-level hubs in a ring; nested hubs stay with their parent.
+    const hubs = physics.filter(n => n.type === 'hub' && n.parent === 'me');
+    hubs.forEach((hub, i) => {
+        const angle = (i / hubs.length) * Math.PI * 2 - Math.PI / 2;
+        const hubRadiusX = Math.min(W * 0.27, 210);
+        const hubRadiusY = Math.min(H * 0.25, 180);
+        hub.x = W / 2 + Math.cos(angle) * hubRadiusX;
+        hub.y = H / 2 + Math.sin(angle) * hubRadiusY;
+        const kids = physics.filter(n => n.parent === hub.id);
+        const fanStep = Math.min(0.42, 1.9 / Math.max(kids.length - 1, 1));
+        kids.forEach((kid, j) => {
+            const ka = angle + (j - (kids.length - 1) / 2) * fanStep;
+            const childRadius = W < 640 ? 104 : 142;
+            kid.x = hub.x + Math.cos(ka) * childRadius;
+            kid.y = hub.y + Math.sin(ka) * childRadius;
+        });
+    });
+    physics.filter(n => n.type === 'hub' && n.parent !== 'me').forEach(hub => {
+        const parent = byId[hub.parent];
+        const angle = Math.atan2(hub.y - parent.y, hub.x - parent.x);
+        const kids = physics.filter(n => n.parent === hub.id);
+        kids.forEach((kid, i) => {
+            const ka = angle + (i - (kids.length - 1) / 2) * 0.48;
+            kid.x = hub.x + Math.cos(ka) * 112;
+            kid.y = hub.y + Math.sin(ka) * 112;
+        });
+    });
+
+    // ── Build edges ───────────────────────────────────────────────────
+    const edges = [];
+    physics.forEach(n => {
+        if (n.parent && byId[n.parent])
+            edges.push({ a: byId[n.parent], b: n, kind: 'parent' });
+    });
+    CROSS_LINKS.forEach(([ia, ib]) => {
+        if (byId[ia] && byId[ib])
+            edges.push({ a: byId[ia], b: byId[ib], kind: 'cross' });
+    });
+
+    // Neighbour map for highlight logic
+    const nbrs = new Map(physics.map(n => [n, new Set()]));
+    edges.forEach(({ a, b }) => { nbrs.get(a).add(b); nbrs.get(b).add(a); });
+
+    // ── SVG lines ─────────────────────────────────────────────────────
+    const svgLines = new Map();
+    edges.forEach(e => {
+        const line = document.createElementNS(NS, 'line');
+        line.setAttribute('stroke',
+            e.kind === 'parent' ? 'rgba(255,255,255,0.16)' : 'rgba(255,255,255,0.07)');
+        line.setAttribute('stroke-width', e.kind === 'parent' ? '1.5' : '1');
+        svgEl.appendChild(line);
+        svgLines.set(e, line);
+    });
+
+    // ── HTML node buttons ─────────────────────────────────────────────
+    physics.forEach(n => {
+        const btn = document.createElement('button');
+        btn.className = 'gnode';
+        btn.setAttribute('data-type', n.type);
+        btn.setAttribute('data-id',   n.id);
+        btn.setAttribute('tabindex',  '0');
+        btn.setAttribute('aria-label',
+            n.label + ((n.desc || n.links?.length || n.url) ? ' — click for details' : ''));
+
+        const circle = document.createElement('span');
+        circle.className = 'gnode-circle';
+        circle.setAttribute('aria-hidden', 'true');
+        circle.textContent = n.icon;
+
+        const lbl = document.createElement('span');
+        lbl.className   = 'gnode-label';
+        lbl.textContent = n.label;
+
+        btn.append(circle, lbl);
+        nodesDiv.appendChild(btn);
+        n.el = btn;
+
+        // Initial position
+        btn.style.left = n.x + 'px';
+        btn.style.top  = n.y + 'px';
+
+        // ── Drag ──
+        let startX, startY, wasMoved = false;
+        btn.addEventListener('pointerdown', e => {
+            dragged  = n;
+            wasMoved = false;
+            startX   = e.clientX;
+            startY   = e.clientY;
+            btn.setPointerCapture(e.pointerId);
+            wrap.classList.add('grabbing');
+            e.preventDefault();
+        });
+        btn.addEventListener('pointermove', e => {
+            if (dragged !== n) return;
+            if (Math.hypot(e.clientX - startX, e.clientY - startY) > 4) wasMoved = true;
+            const r = wrap.getBoundingClientRect();
+            n.x  = e.clientX - r.left;
+            n.y  = e.clientY - r.top;
+            n.vx = 0; n.vy = 0;
+        });
+        btn.addEventListener('pointerup', () => {
+            if (dragged !== n) return;
+            dragged = null;
+            wrap.classList.remove('grabbing');
+            if (!wasMoved) activate(n);
+        });
+
+        // ── Hover / focus ──
+        btn.addEventListener('pointerenter', () => { hovered = n; applyHighlight(); });
+        btn.addEventListener('pointerleave', () => {
+            if (hovered === n) { hovered = null; applyHighlight(); }
+        });
+        btn.addEventListener('focus', () => { hovered = n; applyHighlight(); });
+        btn.addEventListener('blur',  () => {
+            if (hovered === n) { hovered = null; applyHighlight(); }
+        });
+
+        // ── Keyboard ──
+        btn.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(n); }
+        });
+    });
+
+    // Clear hover when pointer leaves the whole graph
+    wrap.addEventListener('pointerleave', () => {
+        if (!dragged) { hovered = null; applyHighlight(); }
+    });
+
+    // ── Physics ───────────────────────────────────────────────────────
+    function step(t) {
+        // Centre gravity + idle drift (all non-root nodes)
+        physics.forEach(n => {
+            if (n.type === 'root') return;
+            n.vx += (W / 2 - n.x) * 0.0007;
+            n.vy += (H / 2 - n.y) * 0.0007;
+            if (!reducedMotion) {
+                n.vx += Math.sin(t * 0.0006 + n.phase) * 0.004;
+                n.vy += Math.cos(t * 0.0009 + n.phase) * 0.004;
+            }
+        });
+
+        // Pairwise repulsion
+        for (let i = 0; i < physics.length; i++) {
+            for (let j = i + 1; j < physics.length; j++) {
+                const a = physics[i], b = physics[j];
+                let dx = a.x - b.x, dy = a.y - b.y;
+                const d2 = Math.max(dx * dx + dy * dy, 1);
+                const d  = Math.sqrt(d2);
+                const f  = Math.min(4400 / d2, 5);
+                dx /= d; dy /= d;
+                if (a.type !== 'root') { a.vx += dx * f; a.vy += dy * f; }
+                if (b.type !== 'root') { b.vx -= dx * f; b.vy -= dy * f; }
+            }
+        }
+
+        // Spring forces along edges
+        edges.forEach(({ a, b, kind }) => {
+            const dx = b.x - a.x, dy = b.y - a.y;
+            const d  = Math.hypot(dx, dy) || 1;
+            const rest = kind === 'parent'
+                ? (a.type === 'root' ? 195 : 140)
+                : 225;
+            const k   = kind === 'parent' ? 0.015 : 0.004;
+            const f   = (d - rest) * k;
+            const fx  = (dx / d) * f, fy = (dy / d) * f;
+            if (a.type !== 'root') { a.vx += fx; a.vy += fy; }
+            if (b.type !== 'root') { b.vx -= fx; b.vy -= fy; }
+        });
+
+        // Integrate
+        physics.forEach(n => {
+            if (n === dragged || n.type === 'root') return;
+            n.vx *= 0.80; n.vy *= 0.80;
+            const padX = Math.max(RADIUS[n.type] + 8, (n.el?.offsetWidth || 0) / 2 + 6);
+            const padY = Math.max(RADIUS[n.type] + 8, (n.el?.offsetHeight || 0) / 2 + 6);
+            n.x = Math.max(padX, Math.min(W - padX, n.x + n.vx));
+            n.y = Math.max(padY, Math.min(H - padY, n.y + n.vy));
+        });
+    }
+
+    // ── Render ────────────────────────────────────────────────────────
+    function render() {
+        physics.forEach(n => {
+            n.el.style.left = n.x + 'px';
+            n.el.style.top  = n.y + 'px';
+        });
+        svgLines.forEach((line, e) => {
+            line.setAttribute('x1', e.a.x); line.setAttribute('y1', e.a.y);
+            line.setAttribute('x2', e.b.x); line.setAttribute('y2', e.b.y);
+        });
+    }
+
+    // ── Highlight ─────────────────────────────────────────────────────
+    function applyHighlight() {
+        const active = selected || hovered || dragged;
+        if (!active) {
+            physics.forEach(n => n.el.classList.remove('active', 'dimmed'));
+            svgLines.forEach((line, e) => {
+                line.setAttribute('stroke',
+                    e.kind === 'parent' ? 'rgba(255,255,255,0.16)' : 'rgba(255,255,255,0.07)');
+                line.setAttribute('stroke-width', e.kind === 'parent' ? '1.5' : '1');
+            });
+            return;
+        }
+        const nbs = nbrs.get(active);
+        physics.forEach(n => {
+            n.el.classList.remove('active', 'dimmed');
+            if (n === active)     n.el.classList.add('active');
+            else if (!nbs.has(n)) n.el.classList.add('dimmed');
+        });
+        svgLines.forEach((line, e) => {
+            const hot = e.a === active || e.b === active;
+            line.setAttribute('stroke',       hot ? 'rgba(249,115,22,0.80)' : 'rgba(255,255,255,0.04)');
+            line.setAttribute('stroke-width', hot ? '2' : '1');
+        });
+    }
+
+    // ── Activate (click / Enter) ───────────────────────────────────────
+    function activate(n) {
+        if (n.desc || n.links?.length || n.url) showFocus(n);
+    }
+
+    // ── Main loop ─────────────────────────────────────────────────────
+    // Pre-settle physics so first paint looks good
+    for (let i = 0; i < 120; i++) step(i * 16);
+    render();
+
+    function loop(t) { step(t); render(); requestAnimationFrame(loop); }
+    requestAnimationFrame(loop);
+
+    // ── Resize ────────────────────────────────────────────────────────
+    window.addEventListener('resize', () => {
+        const oldW = W, oldH = H;
+        setSize();
+        if (oldW && oldH) {
+            physics.forEach(n => {
+                n.x = (n.x / oldW) * W;
+                n.y = (n.y / oldH) * H;
+            });
+        }
+    });
+
+    // ── In-graph focus mode ────────────────────────────────────────────
+    const focus       = document.getElementById('node-focus');
+    const focusIcon   = document.getElementById('focus-icon');
+    const focusMeta   = document.getElementById('focus-meta');
+    const focusTitle  = document.getElementById('focus-title');
+    const focusDesc   = document.getElementById('focus-desc');
+    const focusLinks  = document.getElementById('focus-links');
+    const focusClose  = document.getElementById('focus-close');
+    const focusCard   = focus.querySelector('.focus-card');
+
+    function showFocus(n) {
+        selected = n;
+        hovered = null;
+        lastTrigger = n.el;
+        focusIcon.textContent = n.icon;
+        focusTitle.textContent = n.label;
+        focusDesc.textContent = n.desc || '';
+        focusMeta.textContent = n.meta || n.type;
+        focusLinks.replaceChildren();
+
+        const links = n.links || (n.url ? [{ label: 'Open', url: n.url }] : []);
+        links.forEach(item => {
+            const link = document.createElement('a');
+            link.href = item.url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = item.label + ' ↗';
+            focusLinks.appendChild(link);
+        });
+        focusLinks.classList.toggle('hidden', links.length === 0);
+
+        focus.classList.remove('hidden');
+        focus.setAttribute('aria-hidden', 'false');
+        applyHighlight();
+        window.setTimeout(() => focusClose.focus(), 60);
+    }
+
+    function closeFocus() {
+        if (focus.classList.contains('hidden')) return;
+        focus.classList.add('hidden');
+        focus.setAttribute('aria-hidden', 'true');
+        selected = null;
+        applyHighlight();
+        const trigger = lastTrigger;
+        lastTrigger = null;
+        if (trigger) trigger.focus();
+    }
+
+    focusClose.addEventListener('click', closeFocus);
+    document.getElementById('focus-backdrop').addEventListener('click', closeFocus);
+    document.addEventListener('keydown', e => {
+        if (focus.classList.contains('hidden')) return;
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            closeFocus();
+            return;
+        }
+        if (e.key !== 'Tab') return;
+        const focusable = [...focusCard.querySelectorAll('button, a[href]')];
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    });
+
+    // ── Navbar scramble effect ────────────────────────────────────────
+    const GLYPHS = '!<>-_\\/[]{}=+*^?#';
+    document.querySelectorAll('.scramble').forEach(el => {
+        const original = el.dataset.text;
+        let frame;
+        el.addEventListener('mouseenter', () => {
+            if (reducedMotion) return;
+            cancelAnimationFrame(frame);
+            let t = 0;
+            const tick = () => {
+                t++;
+                el.textContent = original.split('').map((ch, i) => {
+                    if (ch === ' ') return ' ';
+                    if (t > i * 3 + 6) return ch;
+                    return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+                }).join('');
+                if (t < original.length * 3 + 8) frame = requestAnimationFrame(tick);
+                else el.textContent = original;
+            };
+            tick();
+        });
+        el.addEventListener('mouseleave', () => {
+            cancelAnimationFrame(frame);
+            el.textContent = original;
+        });
+    });
     </script>
 </body>
 </html>
