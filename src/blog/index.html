@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Alessio Gandelli's blog — tutorials and whatever I feel like writing.">
+    <title>Blog — Alessio Gandelli</title>
+    <link rel="icon" href="../favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: rgb(44, 29, 95); }
+        ::selection { background: #f97316; color: white; }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: rgb(44, 29, 95); }
+        ::-webkit-scrollbar-thumb { background: #f97316; border-radius: 5px; }
+        .text-orange { color: #f97316; }
+        .bg-orange { background-color: #f97316; }
+    </style>
+</head>
+<body class="text-white font-sans min-h-screen flex flex-col">
+
+    <nav class="w-full border-b border-white border-opacity-10">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="scramble text-lg font-bold tracking-wide hover:text-orange transition-colors duration-200" data-text="alessio gandelli">alessio gandelli</a>
+            <div class="flex gap-5 text-sm font-mono">
+                <a href="../now/" class="scramble hover:text-orange transition-colors duration-200" data-text="now">now</a>
+                <a href="../projects/" class="scramble hover:text-orange transition-colors duration-200" data-text="projects">projects</a>
+                <a href="./" class="scramble text-orange" data-text="blog">blog</a>
+                <a href="../contact/" class="scramble hover:text-orange transition-colors duration-200" data-text="contact">contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 container mx-auto px-6 py-10 max-w-3xl">
+        <h1 class="text-4xl font-extrabold text-orange mb-2">✍️ Blog</h1>
+        <p class="text-gray-300 mb-10">Tutorials and whatever I feel like writing. No schedule, no newsletter, no SEO — just things worth sharing.</p>
+
+        <div id="posts" class="space-y-6"></div>
+
+        <p class="text-center text-sm text-gray-500 mt-12">more coming whenever I feel like it ✌️</p>
+    </main>
+
+    <footer class="border-t border-white border-opacity-10">
+        <div class="container mx-auto px-6 py-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-sm text-gray-400">
+            <p>&copy; 2026 Alessio Gandelli</p>
+            <div class="flex gap-5">
+                <a href="https://github.com/alessiogandelli" target="_blank" rel="noopener noreferrer" class="hover:text-orange transition-colors">GitHub</a>
+                <a href="https://linkedin.com/in/alessiogandelli" target="_blank" rel="noopener noreferrer" class="hover:text-orange transition-colors">LinkedIn</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    /* ================================================================
+       ✏️  EDIT HERE — add a new object at the TOP of this array
+       whenever you write something. That's it, the page does the rest.
+       - url: relative link to the post (e.g. a folder with index.html)
+              or an absolute external link
+       - date: free text, shown as-is
+       ================================================================ */
+    const POSTS = [
+        {
+            title: 'Automating Codebase Management with n8n and AI',
+            date: 'Dec 2025',
+            description: 'A complete automation that transforms your GitHub repository into an intelligent assistant for creating issues and answering questions about your code — n8n, MongoDB, Vertex AI and a Telegram bot.',
+            url: '../tutorials/coding_wizard/',
+            tags: ['Automation', 'RAG', 'AI Agent']
+        }
+    ];
+
+    /* 🛑 machinery below */
+    const container = document.getElementById('posts');
+    POSTS.forEach(post => {
+        const a = document.createElement('a');
+        a.href = post.url;
+        if (post.url.startsWith('http')) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+        a.className = 'block p-6 bg-white bg-opacity-5 rounded-xl transition-all duration-300 hover:bg-opacity-10 hover:scale-[1.02] hover:shadow-xl';
+
+        const title = document.createElement('h2');
+        title.className = 'text-xl font-semibold mb-1';
+        title.textContent = post.title;
+
+        const date = document.createElement('p');
+        date.className = 'text-sm text-orange mb-3';
+        date.textContent = post.date;
+
+        const desc = document.createElement('p');
+        desc.className = 'text-sm text-gray-300 mb-4 leading-relaxed';
+        desc.textContent = post.description;
+
+        const tags = document.createElement('div');
+        tags.className = 'flex flex-wrap gap-2';
+        (post.tags || []).forEach(t => {
+            const s = document.createElement('span');
+            s.className = 'px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium';
+            s.textContent = t;
+            tags.appendChild(s);
+        });
+
+        a.append(title, date, desc, tags);
+        container.appendChild(a);
+    });
+    </script>
+
+    <script>
+        // Navbar scramble hover
+        const GLYPHS = '!<>-_\\/[]{}=+*^?#';
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        document.querySelectorAll('.scramble').forEach(el => {
+            const original = el.dataset.text;
+            let frame;
+            el.addEventListener('mouseenter', () => {
+                if (reducedMotion) return;
+                cancelAnimationFrame(frame);
+                let t = 0;
+                const tick = () => {
+                    t++;
+                    el.textContent = original.split('').map((ch, i) => {
+                        if (ch === ' ') return ' ';
+                        if (t > i * 3 + 6) return ch;
+                        return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+                    }).join('');
+                    if (t < original.length * 3 + 8) frame = requestAnimationFrame(tick);
+                    else el.textContent = original;
+                };
+                tick();
+            });
+            el.addEventListener('mouseleave', () => { cancelAnimationFrame(frame); el.textContent = original; });
+        });
+    </script>
+</body>
+</html>

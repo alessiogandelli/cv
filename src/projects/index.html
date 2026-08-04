@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Things Alessio Gandelli has built — from startups to random comuni extractors.">
+    <title>Projects — Alessio Gandelli</title>
+    <link rel="icon" href="../favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: rgb(44, 29, 95); }
+        ::selection { background: #f97316; color: white; }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: rgb(44, 29, 95); }
+        ::-webkit-scrollbar-thumb { background: #f97316; border-radius: 5px; }
+        .text-orange { color: #f97316; }
+        .bg-orange { background-color: #f97316; }
+        .project-card {
+            position: relative;
+            overflow: hidden;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+        }
+        .project-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(125deg, rgba(249,115,22,0.08), transparent 42%);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+        }
+        .project-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255,255,255,0.075);
+            border-color: rgba(249,115,22,0.25);
+        }
+        .project-card:hover::before { opacity: 1; }
+        .project-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid rgba(249,115,22,0.30);
+            border-radius: 999px;
+            color: #fb923c;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .project-link:hover, .project-link:focus-visible {
+            background: rgba(249,115,22,0.12);
+            border-color: rgba(249,115,22,0.65);
+            outline: none;
+        }
+        .badge-tag {
+            padding: 0.25rem 0.75rem;
+            background: rgba(249,115,22,0.18);
+            color: #fb923c;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .project-card, .project-card::before, .project-link { transition: none; }
+        }
+    </style>
+</head>
+<body class="text-white font-sans min-h-screen flex flex-col">
+
+    <nav class="w-full border-b border-white border-opacity-10">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="scramble text-lg font-bold tracking-wide hover:text-orange transition-colors duration-200" data-text="alessio gandelli">alessio gandelli</a>
+            <div class="flex gap-5 text-sm font-mono">
+                <a href="../now/" class="scramble hover:text-orange transition-colors duration-200" data-text="now">now</a>
+                <a href="./" class="scramble text-orange" data-text="projects">projects</a>
+                <a href="../blog/" class="scramble hover:text-orange transition-colors duration-200" data-text="blog">blog</a>
+                <a href="../contact/" class="scramble hover:text-orange transition-colors duration-200" data-text="contact">contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 container mx-auto px-6 py-10 max-w-5xl">
+        <h1 class="text-4xl font-extrabold text-orange mb-2">🛠️ Projects</h1>
+        <p class="text-gray-300 mb-14 max-w-3xl leading-relaxed">Products, weekend prototypes, and research shaped by language, networks, and real-world problems. Some became startups; others had exactly one night to become a demo.</p>
+
+        <div id="project-sections" class="space-y-20"></div>
+
+        <a href="../" class="inline-block mt-12 text-orange hover:underline">← back home</a>
+    </main>
+
+    <footer class="border-t border-white border-opacity-10">
+        <div class="container mx-auto px-6 py-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-sm text-gray-400">
+            <p>&copy; 2026 Alessio Gandelli</p>
+            <div class="flex gap-5">
+                <a href="https://github.com/alessiogandelli" target="_blank" rel="noopener noreferrer" class="hover:text-orange transition-colors">GitHub</a>
+                <a href="https://linkedin.com/in/alessiogandelli" target="_blank" rel="noopener noreferrer" class="hover:text-orange transition-colors">LinkedIn</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    /* ================================================================
+       ✏️  EDIT HERE — add entries to the relevant section. Each project
+       can have metadata, tags, several links, or a status instead.
+       ================================================================ */
+    const PROJECT_SECTIONS = [
+        {
+            title: 'Products & tools',
+            eyebrow: 'Built to last beyond the demo',
+            description: 'Products I maintain, tools I have published, and experiments that grew legs.',
+            projects: [
+                {
+                    icon: '📚', title: 'StudyBuddy',
+                    meta: 'Co-founder · Active',
+                    description: 'A platform that helps university students study better, combining a Flutter mobile experience with an AI tutor.',
+                    links: [{ label: 'Visit StudyBuddy', url: 'https://studybuddy.it' }],
+                    tags: ['Startup', 'Flutter', 'EdTech']
+                },
+                {
+                    icon: '🏔️', title: 'Ranturismo',
+                    meta: 'Exploration app',
+                    description: 'Pick one of Brescia’s 205 comuni at random and go discover it — a small product born from my love of wandering.',
+                    links: [{ label: 'Open the app', url: 'https://play.ranturismo.com' }],
+                    tags: ['Web app', 'Exploration', 'Gamification']
+                },
+                {
+                    icon: '🤖', title: 'StudyBuddy Tutor',
+                    meta: 'Open source',
+                    description: 'A Telegram-based AI tutor that gives students a conversational way to ask questions and work through study material.',
+                    links: [{ label: 'Repository', url: 'https://github.com/studybuddydev/studybuddy-tutor' }],
+                    tags: ['AI Agent', 'Telegram', 'LLM']
+                },
+                {
+                    icon: '🕸️', title: 'tweets-to-topic-network',
+                    meta: 'Python package · PyPI',
+                    description: 'A Python library that models topics in tweets and turns them into a multi-layer network, with one layer per topic.',
+                    links: [{ label: 'View on PyPI', url: 'https://pypi.org/project/tweets-to-topic-network/' }],
+                    tags: ['Python', 'NLP', 'Network Analysis']
+                }
+            ]
+        },
+        {
+            title: 'Papers',
+            eyebrow: 'Research outputs',
+            description: 'Published and academic work connected to my research in online behavior, influence, and polarization.',
+            projects: [
+                {
+                    icon: '📄', title: 'Online Social Influence',
+                    meta: 'EPJ Data Science · 2026',
+                    description: 'With Diletta Goglia and Davide Vega: when people see what most others think online, they may oppose it deliberately while preserving the same underlying sentiment.',
+                    links: [{ label: 'Read the paper', url: 'https://link.springer.com/article/10.1140/epjds/s13688-026-00668-9' }],
+                    tags: ['Social Influence', 'Reddit', 'Digital Behavior']
+                },
+                {
+                    icon: '🎓', title: 'Climate Twitter Polarization',
+                    meta: 'Master’s thesis',
+                    description: 'An analysis of polarization in climate-change conversations during COP, combining social network analysis with NLP.',
+                    links: [{ label: 'Read the thesis', url: 'https://github.com/alessiogandelli/master-thesis/blob/main/AlessioGandelliThesisFinal.pdf' }],
+                    tags: ['Polarization', 'NLP', 'Network Analysis']
+                }
+            ]
+        },
+        {
+            title: 'Hackathons',
+            eyebrow: 'Eight events, four years, many late nights',
+            description: 'Rapid prototypes built with small teams under real constraints. Private code is marked clearly.',
+            projects: [
+                {
+                    icon: '🧪', title: 'MaterialBuddy',
+                    meta: 'START Hack 2026 · 19–20 March · St. Gallen',
+                    description: 'A natural-language AI agent for ZwickRoell laboratories. It queries material-test data, runs statistics, creates charts, explains findings, and keeps a complete reasoning audit trail.',
+                    status: 'Private under NDA',
+                    tags: ['AI Agent', 'MCP', 'Data Analysis']
+                },
+                {
+                    icon: '💡', title: 'InnoVateSG',
+                    meta: 'START Hack 2025 · St. Gallen',
+                    description: 'An AI innovation coach that helps local business owners move from an idea to practical next steps through a conversational agent and companion Flutter app.',
+                    links: [
+                        { label: 'Agent repository', url: 'https://github.com/alessiogandelli/starthack25-innovateSG-agent' },
+                        { label: 'App repository', url: 'https://github.com/alessiogandelli/starthack25-innovateSG-app' }
+                    ],
+                    tags: ['AI Agent', 'Flutter', 'Local Business']
+                },
+                {
+                    icon: '💸', title: 'MoneyBuddy',
+                    meta: 'START Hack Tour · September 2025',
+                    description: 'A personal finance app that tracks expenses, surfaces spending patterns, and helps people pursue financial goals with the MoneyCA AI assistant.',
+                    links: [
+                        { label: 'App repository', url: 'https://github.com/alessiogandelli/moneybuddy-app' },
+                        { label: 'Backend repository', url: 'https://github.com/alessiogandelli/moneybuddy-backend' }
+                    ],
+                    tags: ['AI Assistant', 'Flutter', 'FinTech']
+                },
+                {
+                    icon: '🌱', title: 'ESGBuddy',
+                    meta: 'NOI Hackathon 2025 · Bolzano',
+                    description: 'The StudyBuddy team’s response to the InfoMinds challenge: a focused experience for making ESG knowledge easier to explore.',
+                    links: [
+                        { label: 'Repository', url: 'https://github.com/alessiogandelli/ESGBuddy' },
+                        { label: 'Live demo', url: 'https://esg.studybuddy.it/' }
+                    ],
+                    tags: ['ESG', 'Education', 'Web']
+                },
+                {
+                    icon: '♻️', title: 'TrashBuddy',
+                    meta: 'NOI Hackathon 2024 · Bolzano',
+                    description: 'A team prototype built for Konverto’s challenge at NOI Hackathon 2024.',
+                    links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/trash-buddy' }],
+                    tags: ['Sustainability', 'Prototype', 'Team']
+                },
+                {
+                    icon: '🚕', title: 'MoooveX Voice',
+                    meta: 'NOI Hackathon 2023 · Bolzano',
+                    description: 'A Telegram voice interface for taxi drivers that extracts origin, destination, date, time, and passenger count to create a ride hands-free.',
+                    links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/noi-hackaton-mooovex' }],
+                    tags: ['Voice UI', 'Telegram', 'Mobility']
+                },
+                {
+                    icon: '🏪', title: 'Shopstem',
+                    meta: 'NOI Hackathon 2022 · Bolzano',
+                    description: 'A retail analytics concept that combines Bluetooth and camera signals to help small and medium businesses understand in-store movement and customer segments.',
+                    links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/shopstem-hackaton' }],
+                    tags: ['Computer Vision', 'Analytics', 'Retail']
+                },
+                {
+                    icon: '🍕', title: 'Galactic Restaurant Agent',
+                    meta: 'Hackapizza 2.0 · 2026',
+                    description: 'An autonomous agent that follows a live game over Server-Sent Events, maintains restaurant state, and makes strategic decisions across every phase.',
+                    links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/hackapizzaiug-restaurant' }],
+                    tags: ['AI Agent', 'SSE', 'Game Strategy']
+                }
+            ]
+        },
+        {
+            title: 'Research & data projects',
+            eyebrow: 'Networks, behavior, and places',
+            description: 'Analytical work that turns digital traces and open data into questions I can investigate.',
+            projects: [
+                {
+                    icon: '📱', title: 'Attention Analysis',
+                    meta: 'Social Dynamics Lab · 2022',
+                    description: 'An analysis of phone-use data gathered within a larger Social Dynamics Lab project, created to understand how students use and divide their attention.',
+                    links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/attention-analysis' }],
+                    tags: ['Digital Behavior', 'Data Analysis', 'Research']
+                },
+                {
+                    icon: '🐦', title: 'Musk Twitter Network',
+                    meta: 'Network and NLP analysis · 2022',
+                    description: 'Tweets published by Elon Musk around his acquisition of Twitter, examined through network analysis and natural language processing.',
+                    links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/tweet-musk-network' }],
+                    tags: ['NLP', 'Social Networks', 'Twitter']
+                },
+                {
+                    icon: '🎧', title: 'Spotify Collaboration Network',
+                    meta: 'Network analysis · 2022',
+                    description: 'A Spotify-derived network in which artists are nodes and featured collaborations form the ties between them.',
+                    links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/feat-network' }],
+                    tags: ['Spotify', 'Network Analysis', 'Python']
+                },
+                {
+                    icon: '🗺️', title: 'Finding Home in Uppsala',
+                    meta: 'Geospatial analysis · 2022',
+                    description: 'A search for the best place to live in Uppsala based on public transport, elevation, workplace distance, amenities, and OpenStreetMap data.',
+                    links: [{ label: 'Repository', url: 'https://github.com/alessiogandelli/geospatial-uppsala-housing' }],
+                    tags: ['GIS', 'OpenStreetMap', 'Spatial Analysis']
+                }
+            ]
+        },
+        
+    ];
+
+    /* 🛑 machinery below */
+    const container = document.getElementById('project-sections');
+    PROJECT_SECTIONS.forEach(section => {
+        const wrapper = document.createElement('section');
+        const heading = document.createElement('div');
+        heading.className = 'mb-7 max-w-3xl';
+
+        const eyebrow = document.createElement('p');
+        eyebrow.className = 'text-xs font-mono uppercase tracking-widest text-orange mb-2';
+        eyebrow.textContent = section.eyebrow;
+
+        const title = document.createElement('h2');
+        title.className = 'text-3xl font-bold mb-2';
+        title.textContent = section.title;
+
+        const intro = document.createElement('p');
+        intro.className = 'text-sm text-gray-400 leading-relaxed';
+        intro.textContent = section.description;
+        heading.append(eyebrow, title, intro);
+
+        const grid = document.createElement('div');
+        grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-6';
+
+        section.projects.forEach(project => {
+            const card = document.createElement('article');
+            card.className = 'project-card rounded-2xl p-6 flex flex-col';
+
+            const meta = document.createElement('p');
+            meta.className = 'relative text-xs font-mono text-orange mb-3';
+            meta.textContent = project.meta || '';
+
+            const projectTitle = document.createElement('h3');
+            projectTitle.className = 'relative text-xl font-semibold mb-3';
+            projectTitle.textContent = project.icon + ' ' + project.title;
+
+            const desc = document.createElement('p');
+            desc.className = 'relative text-sm text-gray-300 mb-5 leading-relaxed flex-1';
+            desc.textContent = project.description;
+
+            const tags = document.createElement('div');
+            tags.className = 'relative flex flex-wrap gap-2 mb-5';
+            (project.tags || []).forEach(tag => {
+                const badge = document.createElement('span');
+                badge.className = 'badge-tag';
+                badge.textContent = tag;
+                tags.appendChild(badge);
+            });
+
+            const actions = document.createElement('div');
+            actions.className = 'relative flex flex-wrap gap-2 mt-auto';
+            (project.links || []).forEach(item => {
+                const link = document.createElement('a');
+                link.className = 'project-link';
+                link.href = item.url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.textContent = item.label + ' ↗';
+                actions.appendChild(link);
+            });
+            if (project.status) {
+                const status = document.createElement('span');
+                status.className = 'inline-flex items-center px-3 py-2 rounded-full bg-white bg-opacity-5 border border-white border-opacity-10 text-xs font-mono text-gray-400';
+                status.textContent = '🔒 ' + project.status;
+                actions.appendChild(status);
+            }
+
+            card.append(meta, projectTitle, desc, tags, actions);
+            grid.appendChild(card);
+        });
+
+        wrapper.append(heading, grid);
+        container.appendChild(wrapper);
+    });
+    </script>
+
+    <script>
+        // Navbar scramble hover
+        const GLYPHS = '!<>-_\\/[]{}=+*^?#';
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        document.querySelectorAll('.scramble').forEach(el => {
+            const original = el.dataset.text;
+            let frame;
+            el.addEventListener('mouseenter', () => {
+                if (reducedMotion) return;
+                cancelAnimationFrame(frame);
+                let t = 0;
+                const tick = () => {
+                    t++;
+                    el.textContent = original.split('').map((ch, i) => {
+                        if (ch === ' ') return ' ';
+                        if (t > i * 3 + 6) return ch;
+                        return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+                    }).join('');
+                    if (t < original.length * 3 + 8) frame = requestAnimationFrame(tick);
+                    else el.textContent = original;
+                };
+                tick();
+            });
+            el.addEventListener('mouseleave', () => { cancelAnimationFrame(frame); el.textContent = original; });
+        });
+    </script>
+</body>
+</html>

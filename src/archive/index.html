@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alessio Gandelli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Add custom colors for the theme */
+        @layer utilities {
+            .bg-deep-purple { background-color: rgb(44, 29, 95); }
+            .text-deep-purple { color: #2a0845; }
+            .text-orange { color: #f97316; }
+            .hover\:text-orange:hover { color: #f97316; }
+            .backdrop-blur { backdrop-filter: blur(8px); }
+        }
+
+        /* Orange selection & scrollbar */
+        ::selection { background-color: #f97316; color: white; }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: rgb(44, 29, 95); }
+        ::-webkit-scrollbar-thumb { background: #f97316; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #fb923c; }
+
+        /* Scroll reveal animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { opacity: 1; transform: none; transition: none; }
+        }
+
+        /* Typewriter cursor */
+        .cursor-blink { animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body class="bg-deep-purple text-white font-sans min-h-screen">
+    <a href="../" class="fixed top-4 left-4 z-50 px-4 py-2 bg-orange text-white rounded-full text-sm font-semibold shadow-lg transition-transform duration-200 hover:scale-105">← back home</a>
+    <!-- <header class="fixed w-full bg-deep-purple/90 backdrop-blur shadow-lg z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-3xl font-bold">My Website</h1>
+            <nav>
+                <ul class="flex space-x-4">
+                    <li><a href="#about" class="hover:text-orange transition-colors duration-200 py-2">About</a></li>
+                    <li><a href="#projects" class="hover:text-orange transition-colors duration-200 py-2">Projects</a></li>
+                    <li><a href="#contact" class="hover:text-orange transition-colors duration-200 py-2">Contact</a></li>
+                    <li><a href="#resume" class="hover:text-orange transition-colors duration-200 py-2">Resume</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header> -->
+
+    <main class="container mx-auto px-6 pt-24 pb-10">
+        <!-- Hero Section -->
+        <section id="hero" class="text-center min-h-[80vh] flex flex-col justify-center items-center">
+            <h2 class="text-4xl font-extrabold text-orange mb-4">Alessio Gandelli</h2>
+            <p class="text-lg mb-8">Co-founder of <a href="https://studybuddy.it" class="text-orange hover:underline transition-colors duration-200">StudyBuddy</a> — I <span id="tagline-rotator" class="text-orange font-semibold">build AI agents</span><span class="text-orange font-semibold cursor-blink">|</span></p>
+            <div class="flex gap-6 items-center">
+                <a href="https://github.com/alessiogandelli" 
+                   class="flex items-center gap-2 hover:text-orange transition-colors duration-200" 
+                   target="_blank" 
+                   rel="noopener noreferrer">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                    </svg>
+                    GitHub
+                </a>
+                <a href="https://linkedin.com/in/alessiogandelli" 
+                   class="flex items-center gap-2 hover:text-orange transition-colors duration-200" 
+                   target="_blank" 
+                   rel="noopener noreferrer">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                    LinkedIn
+                </a>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="mt-16 reveal">
+            <h2 class="text-3xl font-bold text-orange mb-4">About Me</h2>
+            <p class="text-base leading-relaxed">
+                I like building things, could be wood, but now is software and a startup.
+            </p>
+        </section>
+
+        <!-- Beyond the Screen Section -->
+        <section id="offscreen" class="mt-16 reveal">
+            <h2 class="text-3xl font-bold text-orange mb-4">Beyond the Screen</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white bg-opacity-5 rounded-lg p-6 hover:bg-opacity-10 transition-all duration-300">
+                    <div class="space-y-4">
+                        <div class="border-l-2 border-orange pl-4">
+                            <h4 class="font-semibold">🧠 Going deep on AI</h4>
+                            <p class="mt-1 text-sm text-gray-300">Researching and studying how models really work — not a prompt engineer.</p>
+                        </div>
+                        <div class="border-l-2 border-orange pl-4">
+                            <h4 class="font-semibold">🥾 Hiking, exploring & camping</h4>
+                            <p class="mt-1 text-sm text-gray-300">Being in touch with nature, ideally off the beaten path.</p>
+                        </div>
+                        <div class="border-l-2 border-orange pl-4">
+                            <h4 class="font-semibold">♟️ Chess & 🧩 Rubik's cube</h4>
+                            <p class="mt-1 text-sm text-gray-300">Trying to get better at the first one, faster at the second.</p>
+                        </div>
+                        <div class="border-l-2 border-orange pl-4">
+                            <h4 class="font-semibold">🎲 Learning random stuff</h4>
+                            <p class="mt-1 text-sm text-gray-300">Curiosity-driven, no syllabus.</p>
+                        </div>
+                    </div>
+                </div>
+                <a href="https://www.duolingo.com/profile/d8eea" target="_blank" rel="noopener noreferrer" class="bg-white rounded-lg p-6 flex flex-col items-center justify-center gap-3 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                    <img src="https://duolingo-api-five.vercel.app/user/svg/d8eea" alt="My Duolingo streak" class="w-44" loading="lazy">
+                    <p class="text-deep-purple text-sm font-semibold text-center">🦉 Learning French 🇫🇷 and chess ♟️ — one lesson a day</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Tutorials Section -->
+        <section id="tutorials" class="mt-16 reveal">
+            <h2 class="text-3xl font-bold text-orange mb-4">Tutorials & Writings</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <a href="../tutorials/coding_wizard/" class="p-4 bg-white bg-opacity-5 rounded-lg shadow-md transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
+                    <h3 class="text-xl font-semibold">Automating Codebase Management with n8n and AI</h3>
+                    <p class="text-sm text-gray-400 mb-2">n8n • MongoDB • Vertex AI • Telegram</p>
+                    <p class="mb-3">A complete automation that transforms your GitHub repository into an intelligent assistant for creating issues and answering questions about your code.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Automation</span>
+                        <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">RAG</span>
+                        <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">AI Agent</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="mt-16 reveal">
+            <h2 class="text-3xl font-bold text-orange mb-4">Projects</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <a href="https://studybuddy.it" class="p-4 bg-white bg-opacity-5 rounded-lg shadow-md transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl font-semibold">StudyBuddy</h3>
+                <p>A platform for university students, i am developing the mobile app in Flutter and soon it will be accessible on the app store, if you want to test it, contact me</p>
+            </a>
+            <a href="https://github.com/alessiogandelli/tweets-to-topic-network" class="p-4 bg-white bg-opacity-5 rounded-lg shadow-md transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl font-semibold">Network of Topics</h3>
+                <p>Created a Python library that performs topic modeling on tweets and builds a multi-layer network with each layer corresponding to a distinct topic</p>
+            </a>
+            <a href="https://play.ranturismo.com" class="p-4 bg-white bg-opacity-5 rounded-lg shadow-md transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl font-semibold">🏔️ Ranturismo</h3>
+                <p>Discover all 205 comuni of the province of Brescia — extract a random comune and go explore it. Born from my love of wandering.</p>
+            </a>
+            </div>
+        </section>
+
+        <!-- Papers Section -->
+        <section id="papers" class="mt-16 reveal">
+            <h2 class="text-3xl font-bold text-orange mb-4">Papers</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <a href="https://link.springer.com/article/10.1140/epjds/s13688-026-00668-9" class="p-4 bg-white bg-opacity-5 rounded-lg shadow-md transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl font-semibold">Online Social Influence</h3>
+                <p class="text-sm text-gray-400 mb-2">Diletta Goglia, Davide Vega, Alessio Gandelli</p>
+                <p class="mb-3">When people see what most others think online, they actually do the opposite on purpose - but still keep the same good or bad feeling about it.</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Social Conformity</span>
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Reddit</span>
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">NLP</span>
+                </div>
+            </a>
+            <a href="https://github.com/alessiogandelli/master-thesis/blob/main/AlessioGandelliThesisFinal.pdf" class="p-4 bg-white bg-opacity-5 rounded-lg shadow-md transition-all duration-300 hover:bg-opacity-10 hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl font-semibold">Climate Twitter Polarization</h3>
+                <p class="text-sm text-gray-400 mb-2">Alessio Gandelli</p>
+                <p class="mb-3">Looked at Twitter fights about climate change during a big meeting. Found that people arguing about Canada's coal and private jets were the most divided.</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Network Analysis</span>
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Polarization</span>
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Climate Change</span>
+                </div>
+            </a>
+            </div>
+        </section>
+
+        <!-- Resume Section -->
+        <section id="resume" class="mt-16 reveal">
+            <h2 class="text-3xl font-bold text-orange mb-8">Resume</h2>
+            
+            <!-- Contact Info Card -->
+            <div class="bg-white bg-opacity-5 rounded-lg p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-4">Alessio Gandelli</h3>
+            <div class="flex flex-wrap gap-4">
+                <!-- <a href="mailto:me@gandelli.dev" class="flex items-center gap-2 text-orange hover:underline">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    me@gandelli.dev
+                </a> -->
+            </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Work Experience Card -->
+            <div class="bg-white bg-opacity-5 rounded-lg p-6 hover:bg-opacity-10 transition-all duration-300">
+                <h3 class="text-xl font-bold text-orange mb-6">Work Experience</h3>
+                <div class="space-y-6">
+                    <div class="border-l-2 border-orange pl-4 hover:border-opacity-80 transition-all">
+                        <h4 class="font-semibold text-lg">Freelance AI Engineer</h4>
+                        <p class="text-sm text-gray-300 mt-1">2025 - current</p>
+                        <p class="mt-3 text-sm leading-relaxed">I build AI agents and customized AI solutions for whoever needs them.</p>
+                    </div>
+                    <div class="border-l-2 border-orange pl-4 hover:border-opacity-80 transition-all">
+                        <h4 class="font-semibold text-lg">AI trainer @ YellowTech</h4>
+                        <p class="text-sm text-gray-300 mt-1">Nov 2024 - current</p>
+                        <p class="mt-3 text-sm leading-relaxed">I teach AI to schools and companies: how it works under the hood and how generative AI tools can actually help teachers, students and teams.</p>
+                    </div>
+                    <div class="border-l-2 border-orange pl-4 hover:border-opacity-80 transition-all">
+                        <h4 class="font-semibold text-lg">Co-founder @ <a href="https://studybuddy.it" class="text-orange hover:underline transition-colors duration-200">StudyBuddy</a></h4>
+                        <p class="text-sm text-gray-300 mt-1">Jan 2023 - current</p>
+                        <p class="mt-3 text-sm leading-relaxed">Building a platform that helps university students study better: mobile app in Flutter and an AI tutor. <em class="text-gray-400">(cofondo ma non confondo il co con il fondo)</em></p>
+                    </div>
+                    <div class="border-l-2 border-orange pl-4 hover:border-opacity-80 transition-all">
+                        <h4 class="font-semibold text-lg">Visiting researcher at Uppsala University</h4>
+                        <p class="text-sm text-gray-300 mt-1">Apr 2024 - Jun 2024</p>
+                        <p class="mt-3 text-sm leading-relaxed">Conducted research on social media dynamics, particularly polarization and disagreement using NLP techniques.</p>
+                    </div>
+                    <div class="border-l-2 border-orange pl-4 hover:border-opacity-80 transition-all">
+                        <h4 class="font-semibold text-lg">Data Science intern at Uppsala University</h4>
+                        <p class="text-sm text-gray-300 mt-1">Mar 2023 - Jun 2023</p>
+                        <p class="mt-3 text-sm leading-relaxed">Master thesis analyzing polarization in climate change tweets during COP.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Education Card -->
+            <div class="bg-white bg-opacity-5 rounded-lg p-6 hover:bg-opacity-10 transition-all duration-300">
+                <h3 class="text-xl font-bold text-orange mb-6">Education</h3>
+                <div class="space-y-6">
+                    <div class="border-l-2 border-orange pl-4 hover:border-opacity-80 transition-all">
+                        <h4 class="font-semibold text-lg">Data Science MSc</h4>
+                        <p class="text-sm text-gray-300 mt-1">University of Trento | 2021 - 2023</p>
+                        <p class="mt-2 text-sm text-gray-400">Focus on machine learning and data analysis and computationa social science</p>
+                    </div>
+                    <div class="border-l-2 border-orange pl-4 hover:border-opacity-80 transition-all">
+                        <h4 class="font-semibold text-lg">Computer Science BSc</h4>
+                        <p class="text-sm text-gray-300 mt-1">University of Trento | 2018 - 2021</p>
+                        <p class="mt-2 text-sm text-gray-400">Core computer science fundamentals</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Card -->
+            <div class="bg-white bg-opacity-5 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-orange mb-4">Projects</h3>
+                <div class="space-y-4">
+                <div class="border-l-2 border-orange pl-4">
+                    <h4 class="font-semibold">🕸️ Tweets-to-topic-network</h4>
+                    <p class="mt-2 text-sm">Python library for social scientists to efficiently label tweets using BERTopic.</p>
+                    <a href="https://pypi.org/project/tweets-to-topic-network/" class="text-orange hover:underline text-sm">View on PyPI →</a>
+                </div>
+                <div class="border-l-2 border-orange pl-4">
+                    <h4 class="font-semibold">🤖 StudyBuddy-tutor</h4>
+                    <p class="mt-2 text-sm">Telegram bot with advanced generative AI capabilities for students.</p>
+                    <a href="https://github.com/studybuddydev/studybuddy-tutor" class="text-orange hover:underline text-sm">View on GitHub →</a>
+                </div>
+                </div>
+            </div>
+
+            <!-- Skills Card -->
+            <div class="bg-white bg-opacity-5 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-orange mb-4">Skills</h3>
+                <div class="space-y-4">
+                <div class="border-l-2 border-orange pl-4">
+                    <h4 class="font-semibold">Technical Skills</h4>
+                    <p class="mt-2 text-sm">Python, R, TypeScript, social network analysis, NLP, Flutter</p>
+                </div>
+                <div class="border-l-2 border-orange pl-4">
+                    <h4 class="font-semibold">Soft Skills</h4>
+                    <p class="mt-2 text-sm">Adaptability, team work, etc </p>
+                </div>
+                </div>
+            </div>
+
+            <!-- Research Interests Card -->
+            <div class="bg-white bg-opacity-5 rounded-lg p-6 md:col-span-2 hover:bg-opacity-10 transition-all duration-300">
+                <h3 class="text-xl font-bold text-orange mb-4">Research Interests</h3>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Large Language Models</span>
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Natural Language Processing</span>
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Computational Social Science</span>
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Information Retrieval</span>
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Human-AI Interaction</span>
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Knowledge Retrieval Systems</span>
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Semantic Search</span>
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Digital Behavior Analysis</span>
+                    <span class="px-3 py-1 bg-orange bg-opacity-20 text-orange rounded-full text-xs font-medium">Social Network Analysis</span>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        </main>
+
+
+
+        <footer class="container mx-auto px-6 py-6 mt-16 border-t border-gray-700">
+            <div class="flex justify-between items-center">
+            <p>&copy; 2026 Alessio Gandelli. All rights reserved.</p>
+            <div class="flex gap-4">
+                <a href="https://github.com/alessiogandelli" 
+                   class="hover:text-orange transition-colors duration-200" 
+                   target="_blank" 
+                   rel="noopener noreferrer">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                </svg>
+                </a>
+                <a href="https://linkedin.com/in/alessiogandelli" 
+                   class="hover:text-orange transition-colors duration-200" 
+                   target="_blank" 
+                   rel="noopener noreferrer">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+                </a>
+            </div>
+            </div>
+        </footer>
+
+    <script>
+        // Highlight active navigation link based on scroll position
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('nav a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('text-orange');
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.classList.add('text-orange');
+                }
+            });
+        });
+
+        // Scroll reveal animation
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // Hero tagline typewriter rotator
+        const phrases = [
+            'build AI agents',
+            'teach AI to humans',
+            'run models on my own hardware',
+            'explore all 205 comuni of Brescia'
+        ];
+        const rotator = document.getElementById('tagline-rotator');
+        let phraseIndex = 0, charIndex = phrases[0].length, deleting = false;
+
+        function typeLoop() {
+            const phrase = phrases[phraseIndex];
+            charIndex += deleting ? -1 : 1;
+            rotator.textContent = phrase.slice(0, charIndex);
+
+            let delay = deleting ? 40 : 80;
+            if (!deleting && charIndex === phrase.length) {
+                delay = 2200;
+                deleting = true;
+            } else if (deleting && charIndex === 0) {
+                deleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                delay = 400;
+            }
+            setTimeout(typeLoop, delay);
+        }
+
+        if (rotator && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            setTimeout(typeLoop, 2200);
+        }
+    </script>
+</body>
+</html>
